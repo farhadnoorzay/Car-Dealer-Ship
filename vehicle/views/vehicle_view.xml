@@ -1,0 +1,161 @@
+<odoo>
+    <data>
+        <!-- explicit list view definition -->
+
+        <record id="vehicle_view_form" model="ir.ui.view">
+            <field name="name">vehicle.view.form</field>
+            <field name="model">cds.vehicle</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <header>
+                        <button name="action_trigger_shipment_wizard" string="Shipment" type="object" class="oe_highlight"
+                                attrs="{'invisible': [('state', '!=', 'won')]}"/>
+                        <button name="action_mark_won" string="Won" type="object" class="oe_highlight"
+                                attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                        <button name="action_mark_lost" string="Lost" type="object" class="oe_highlight"
+                                attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                        <button name="action_trigger_maintenance" string="Maintenance" type="object" class="oe_highlight"
+                                attrs="{'invisible': [('state', '!=', 'dock')]}"/>
+                        <button name="action_mark_sold" string="Sold" type="object" class="oe_highlight"
+                                attrs="{'invisible': [('state', '!=', 'maintenance')]}"/>
+                        <button name="action_mark_dock" string="Dock" type="object" class="oe_highlight"
+                                attrs="{'invisible': [('state', 'not in', ['shipment',])]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,won,lost,shipment_confirmed,dock,maintenance"/>
+
+                        <widget name="web_ribbon" title="Lost" bg_color="bg-danger" attrs="{'invisible': [('state', '!=', 'lost')]}"/>
+                        <widget name="web_ribbon" title="Won" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'won')]}"/>
+                        <widget name="web_ribbon" title="Sold" bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'sold')]}"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                        </div>
+                        <field name="image" widget='image' class="oe_avatar"/>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="reference" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group name="detail" string="Vehicle Detail">
+                                <field name="name" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="lot" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="year" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="make" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="category" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="model" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="sub_model" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="vin_number" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="location" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="key" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="trim_level" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                            </group>
+
+                            <group name="detail" string="Pricing Details">
+                                <field name="currency" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="bidding_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="dealership_tax" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="tow" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="Shipment" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="vat" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="custom" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="port_clearance_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="purchase_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="recovery_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="repairing_cost" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="sales_agent_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="profit_margin" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="Selling_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="state" invisible="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page name="shipment_details" string="Shipment Details">
+                                <field name="shipment_details_ids" widget="one2many_list">
+                                    <tree editable="bottom" create="0">  <!-- Set create="0" here -->
+                                        <field name="origin_port"/>
+                                        <field name="destination_port"/>
+                                        <field name="expected_arrival_date"/>
+                                        <field name="tracking_number"/>
+                                        <field name="transportation_company"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="cds_vehicle_view_search" model="ir.ui.view">
+            <field name="name">vehicle_view_search</field>
+            <field name="model">cds.vehicle</field>
+            <field name="arch" type="xml">
+                <search string="">
+                    <field name="name"/>
+                    <field name="model"/>
+                    <field name="make"/>
+                    <field name="state"/>
+                    <group expand="0" string="Group By">
+                        <filter name="year" string="Year" context="{'group_by': 'year'}" />
+                        <filter name="category" string="Category" context="{'group_by': 'category'}" />
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="parent_kanban" model="ir.ui.view">
+            <field name="name">cds_vehicle_view_kanban</field>
+            <field name="model">cds.vehicle</field>
+            <field name="priority">10</field>
+            <field name="arch" type="xml">
+                <kanban sample="1">
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_hr_kanban_record">
+                                <field name="image" class="o_kanban_image_fill_left d-block" preview_image="image_128" widget="background_image" options="{'zoom': true, 'zoom_delay': 1000}"/>
+                                <div class="oe_kanban_details">
+                                    <div class="o_kanban_record_top">
+                                        <div class="o_kanban_record_headings">
+                                            <ul>
+                                                <li><b>Name:</b>&#160;<field name="name"/></li>
+                                                <li><b>Model:</b>&#160;<field name="model"/></li>
+                                                <li><b>Year:</b>&#160;<field name="year"/></li>
+                                                <li><b>Category:</b>&#160;<field name="category"/></li>
+                                                <li><b>Trim Level:</b>&#160;<field name="trim_level"/></li>
+                                                <li><b>Make:</b>&#160;<field name="make"/></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- actions opening views on models -->
+
+        <record model="ir.actions.act_window" id="vehicle.action_window">
+            <field name="name">Vehicle Detail</field>
+            <field name="res_model">cds.vehicle</field>
+            <field name="view_mode">kanban,tree,form</field>
+        </record>
+
+        <!-- Top menu item -->
+
+        <menuitem name="Vehicle" id="vehicle.menu_root" web_icon="vehicle,static/description/odoo_icon.png"/>
+
+        <!-- menu categories -->
+
+        <menuitem name="Vehicle Detail" id="vehicle.menu_1" parent="vehicle.menu_root" action="vehicle.action_window"/>
+        <!-- <menuitem name="Menu 2" id="vehicle.menu_2" parent="vehicle.menu_root"/> -->
+
+        <!-- actions -->
+
+        <!-- <menuitem name="List" id="vehicle.menu_1_list" parent="vehicle.menu_1"
+                action="vehicle.action_window"/>
+        <menuitem name="Server to list" id="vehicle" parent="vehicle.menu_2"
+                action="vehicle.action_server"/> -->
+    </data>
+</odoo>

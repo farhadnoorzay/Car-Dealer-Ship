@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from odoo import models, fields, api
+from odoo.addons.mail.models import mail_thread as MailThread
+
+
+
+
+
 
 
 year_range = [(str(year), str(year)) for year in range(1990, 2029)]
@@ -8,6 +14,7 @@ year_range = [(str(year), str(year)) for year in range(1990, 2029)]
 class Vehicle(models.Model):
     _name = 'cds.vehicle'
     _description = 'Vehicle'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     shipment_details_ids = fields.One2many('shipment.details', 'vehicle_id', string='Shipment Details', copy=True)
     reference = fields.Char("Reference No", required=True, copy=False, readonly=True, default='New')
@@ -26,17 +33,22 @@ class Vehicle(models.Model):
     bidding_price = fields.Monetary(string='Bidding Price', currency_field='currency', required=True)
     currency = fields.Many2one('res.currency', string='Currency', required=True)
     dealership_tax = fields.Monetary(string='Dealership Tax', currency_field='currency')
+    yard = fields.Monetary(string='Yard', currency_field='currency')
     tow = fields.Monetary(string='Tow', currency_field='currency', required=True)
     Shipment = fields.Monetary(string='Shipment', currency_field='currency', required=True)
-    vat = fields.Monetary(string='Vat', currency_field='currency', required=True)
+    vat = fields.Monetary(string='VAT', currency_field='currency', required=True)
     custom = fields.Monetary(string='Custom', currency_field='currency', required=True)
     port_clearance_fee = fields.Monetary(string='Port Clearance Fee', currency_field='currency', required=True)
-    purchase_fee = fields.Monetary(string='Purchase Fee', currency_field='currency', required=True)
+    purchase_fee = fields.Monetary(string='Purchase Agent Fee', currency_field='currency', required=True)
     recovery_fee = fields.Monetary(string='Recovery Fee', currency_field='currency', required=True)
     repairing_cost = fields.Monetary(string='Repairing Cost', currency_field='currency', required=True)
     sales_agent_fee = fields.Monetary(string='Sales Agent Fee', currency_field='currency', required=True)
     profit_margin = fields.Monetary(string='Profit Margin', currency_field='currency', required=True)
+    status_class = fields.Char(compute='_compute_status_class', string='Status Class', store=False)
     Selling_price = fields.Monetary(string='Selling Price', currency_field='currency', compute='_compute_selling_price', store=True)
+    total_cost = fields.Monetary(string='Total Cost', currency_field='currency', compute='_compute_selling_price', store=True)
+
+    
     state = fields.Selection([
         ('draft', 'Draft'),
         ('won', 'Won'),
@@ -47,7 +59,7 @@ class Vehicle(models.Model):
         ('sold', 'Sold'),  # Add the 'sold' state
     ], string='State', default='draft')
 
-    @api.depends('bidding_price', 'dealership_tax', 'tow', 'Shipment', 'vat', 'custom', 'port_clearance_fee', 'purchase_fee', 'recovery_fee', 'repairing_cost', 'sales_agent_fee', 'profit_margin')
+    @api.depends('bidding_price', 'dealership_tax', 'tow', 'Shipment', 'vat', 'custom', 'port_clearance_fee', 'purchase_fee', 'recovery_fee', 'repairing_cost', 'sales_agent_fee', 'Selling_price')
     def _compute_selling_price(self):
         for record in self:
             total_amount = (
@@ -62,9 +74,19 @@ class Vehicle(models.Model):
                 record.recovery_fee +
                 record.repairing_cost +
                 record.sales_agent_fee +
-                record.profit_margin
+                record.Selling_price  # Include Selling Price in the total amount calculation
             )
-            record.Selling_price = total_amount
+            record.total_cost = total_amount - record.Selling_price  # Subtract Selling Price from the total amount
+
+            # Calculate profit margin as a percentage without including selling price in total cost
+            if total_amount != 0:
+                record.profit_margin = ((record.Selling_price - record.total_cost) / record.Selling_price) * 100
+            else:
+                record.profit_margin = 0
+
+
+
+
 
     shipment_date = fields.Date(string='Shipment Date')
 
@@ -78,7 +100,6 @@ class Vehicle(models.Model):
             'target': 'new',
         }
 
-    status_class = fields.Char(compute='_compute_status_class', string='Status Class', store=False)
 
     @api.depends('state')
     def _compute_status_class(self):
@@ -114,6 +135,38 @@ class Vehicle(models.Model):
     def create(self, vals):
         vals['reference'] = self.env['ir.sequence'].next_by_code('cds.vehicle.sequence')
         return super(Vehicle, self).create(vals)
+
+
+
+    activity_ids = fields.One2many(
+        'mail.activity',
+        'res_id',
+        domain=lambda self: [('res_model', '=', 'cds.vehicle')],
+        string='Activities',
+        auto_join=True,
+        help="Activities related to this vehicle",
+    )
+
+    message_follower_ids = fields.Many2many(
+        'mail.followers',
+        'mail_followers_rel',
+        'res_id',
+        'partner_id',
+        string="Followers",
+        copy=False,
+    )
+
+    message_ids = fields.One2many(
+        'mail.message',
+        'res_id',
+        domain=lambda self: [('model', '=', 'cds.vehicle')],
+        string='Messages',
+        auto_join=True,
+        help="Messages and communication history",
+    )
+
+
+
 
 
 class ShipmentDetails(models.Model):

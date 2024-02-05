@@ -37,18 +37,26 @@
                         <field name="state" widget="statusbar" statusbar_visible="draft,won,lost,shipment_confirmed,dock,maintenance"/>
 
 
-                             
+                        
                     </header>
                     <sheet>
-
-                        <widget name="web_ribbon" title="Lost" bg_color="bg-danger" attrs="{'invisible': [('state', '!=', 'lost')]}"/>
-                        <widget name="web_ribbon" title="Won" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'won')]}"/>
-                        <widget name="web_ribbon" title="Sold" bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'sold')]}"/>
-
+                    <style>
+                        .oe_avatar_left {
+                            float: right;
+                        margin-right: 75px;
+                        }
+                    </style>
+                            <div class="oe_button_box" name="button_box_pricing">
+                                <widget name="web_ribbon" title="Lost" bg_color="bg-danger" attrs="{'invisible': [('state', '!=', 'lost')]}"/>
+                                <widget name="web_ribbon" title="Won" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'won')]}"/>
+                                <widget name="web_ribbon" title="Sold" bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'sold')]}"/>
+                            </div>
 
                         <div class="oe_button_box" name="button_box">
                         </div>
-                        <field name="image" widget='image' class="oe_avatar"/>
+                         <div class="oe_avatar_left">
+                            <field name="image" widget='image' class="oe_avatar"/>
+                        </div>
                         <div class="oe_title">
                             <h1>
                                 <field name="reference" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock', 'draft', 'won'])]}"/>
@@ -71,9 +79,9 @@
 
                             <group name="detail" string="Pricing Details">
                                 <field name="currency" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="Selling_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
                                 <field name="bidding_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
                                 <field name="dealership_tax" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="yard" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
                                 <field name="tow" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
                                 <field name="Shipment" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
                                 <field name="vat" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
@@ -85,6 +93,7 @@
                                 <field name="sales_agent_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
                                 <field name="profit_margin"  attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
                                 <field name="total_cost" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="Selling_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
                                 <!-- <field name="applied_percentage" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/> -->
                                 <field name="state" invisible="1"/>
                             </group>

@@ -2,6 +2,7 @@
 from datetime import datetime
 from odoo import models, fields, api
 from odoo.addons.mail.models import mail_thread as MailThread
+from odoo.exceptions import ValidationError
 
 
 
@@ -43,12 +44,11 @@ class Vehicle(models.Model):
     recovery_fee = fields.Monetary(string='Recovery Fee', currency_field='currency', required=True)
     repairing_cost = fields.Monetary(string='Repairing Cost', currency_field='currency', required=True)
     sales_agent_fee = fields.Monetary(string='Sales Agent Fee', currency_field='currency', required=True)
-    profit_margin = fields.Monetary(string='Profit Margin', currency_field='currency', required=True)
+    profit_margin = fields.Float(string='Profit Margin', required=True)
     status_class = fields.Char(compute='_compute_status_class', string='Status Class', store=False)
     Selling_price = fields.Monetary(string='Selling Price', currency_field='currency', compute='_compute_selling_price', store=True)
-    total_cost = fields.Monetary(string='Total Cost', currency_field='currency', compute='_compute_selling_price', store=True)
-
-    
+    total_cost = fields.Monetary(string='Total Cost', currency_field='currency', compute='_compute_total_cost', store=True)
+    shipment_date = fields.Date(string='Shipment Date')    
     state = fields.Selection([
         ('draft', 'Draft'),
         ('won', 'Won'),
@@ -59,9 +59,19 @@ class Vehicle(models.Model):
         ('sold', 'Sold'),  # Add the 'sold' state
     ], string='State', default='draft')
 
-    @api.depends('bidding_price', 'dealership_tax', 'tow', 'Shipment', 'vat', 'custom', 'port_clearance_fee', 'purchase_fee', 'recovery_fee', 'repairing_cost', 'sales_agent_fee', 'Selling_price')
-    def _compute_selling_price(self):
+
+
+    @api.constrains('profit_margin')
+    def _check_profit_margin(self):
+            for rec in self:
+                if rec.profit_margin > 100:
+                    raise ValidationError("Profit margin cannot be greater than 100.")
+            
+
+    @api.depends('bidding_price', 'dealership_tax', 'tow', 'Shipment', 'vat', 'custom', 'port_clearance_fee', 'purchase_fee', 'recovery_fee', 'repairing_cost', 'sales_agent_fee', 'Selling_price', 'profit_margin')
+    def _compute_total_cost(self):
         for record in self:
+            record.Selling_price = False
             total_amount = (
                 record.bidding_price +
                 record.dealership_tax +
@@ -76,19 +86,16 @@ class Vehicle(models.Model):
                 record.sales_agent_fee +
                 record.Selling_price  # Include Selling Price in the total amount calculation
             )
-            record.total_cost = total_amount - record.Selling_price  # Subtract Selling Price from the total amount
+            record.total_cost = total_amount  # Subtract Selling Price from the total amount
+            # record.Selling_price = ((record.total_cost * record.profit_margin)/100) + record.total_cost
 
-            # Calculate profit margin as a percentage without including selling price in total cost
-            if total_amount != 0:
-                record.profit_margin = ((record.Selling_price - record.total_cost) / record.Selling_price) * 100
-            else:
-                record.profit_margin = 0
-
-
+    @api.depends('total_cost')
+    def _compute_selling_price(self):
+        for rec in self:
+            rec.Selling_price = rec.total_cost * rec.profit_margin + rec.total_cost
 
 
-
-    shipment_date = fields.Date(string='Shipment Date')
+    
 
     def action_trigger_shipment_wizard(self):
         return {

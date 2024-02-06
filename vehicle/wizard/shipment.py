@@ -30,14 +30,3 @@ class CDSVehicleShipmentWizard(models.TransientModel):
         })
         active_vehicle.state = "dock"
         # active_vehicle.state = "shipment_confirmed"
-
-
-        # shipment_details_values = {
-        #     'vehicle_id': active_vehicle.id,
-        #     # Add other details from the wizard
-        # }
-        # self.env['shipment.details'].create(shipment_details_values)
-        # # You can add additional logic here based on your requirements
-
-        # # Close the wizard
-        # return {'type': 'ir.actions.act_window_close'}

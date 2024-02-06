@@ -91,14 +91,14 @@
                                 <field name="recovery_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
                                 <field name="repairing_cost" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
                                 <field name="sales_agent_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="profit_margin"  attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                <field name="profit_margin"  attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}" widget="percentage"/>
                                 <field name="total_cost" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
                                 <field name="Selling_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
                                 <!-- <field name="applied_percentage" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/> -->
                                 <field name="state" invisible="1"/>
                             </group>
                         </group>
-                        <notebook>
+                          <notebook>
                             <page name="shipment_details" string="Shipment Details">
                                 <field name="shipment_details_ids" widget="one2many_list">
                                     <tree editable="bottom" create="0">  <!-- Set create="0" here -->

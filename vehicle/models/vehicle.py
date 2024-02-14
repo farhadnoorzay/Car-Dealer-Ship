@@ -2,6 +2,7 @@
 from datetime import datetime
 from odoo import models, fields, api
 from odoo.addons.mail.models import mail_thread as MailThread
+from odoo.exceptions import ValidationError
 
 
 
@@ -9,14 +10,14 @@ from odoo.addons.mail.models import mail_thread as MailThread
 
 
 
-year_range = [(str(year), str(year)) for year in range(1990, 2029)]
+year_range = [(str(year), str(year)) for year in range(2000, 2026)]
 
 class Vehicle(models.Model):
     _name = 'cds.vehicle'
     _description = 'Vehicle'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin' ]
+    _rec_name = 'reference'
 
-    shipment_details_ids = fields.One2many('shipment.details', 'vehicle_id', string='Shipment Details', copy=True)
     reference = fields.Char("Reference No", required=True, copy=False, readonly=True, default='New')
     name = fields.Char(required=True)
     image = fields.Binary()
@@ -43,25 +44,33 @@ class Vehicle(models.Model):
     recovery_fee = fields.Monetary(string='Recovery Fee', currency_field='currency', required=True)
     repairing_cost = fields.Monetary(string='Repairing Cost', currency_field='currency', required=True)
     sales_agent_fee = fields.Monetary(string='Sales Agent Fee', currency_field='currency', required=True)
-    profit_margin = fields.Monetary(string='Profit Margin', currency_field='currency', required=True)
+    profit_margin = fields.Float(string='Profit Margin', required=True)
     status_class = fields.Char(compute='_compute_status_class', string='Status Class', store=False)
-    Selling_price = fields.Monetary(string='Selling Price', currency_field='currency', compute='_compute_selling_price', store=True)
-    total_cost = fields.Monetary(string='Total Cost', currency_field='currency', compute='_compute_selling_price', store=True)
-
-    
+    selling_price = fields.Monetary(string='Selling Price', currency_field='currency', compute='_compute_selling_price', store=True)
+    total_cost = fields.Monetary(string='Total Cost', currency_field='currency', compute='_compute_total_cost', store=True)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('won', 'Won'),
-        ('lost', 'Lost'),
         ('shipment_confirmed', 'Shipment Confirmed'),
         ('dock', 'Dock'),
         ('maintenance', 'Maintenance'),
         ('sold', 'Sold'),  # Add the 'sold' state
-    ], string='State', default='draft')
+        ('lost', 'Lost'),
+    ], string='State', default='draft', group_expand='_expand_states')
 
-    @api.depends('bidding_price', 'dealership_tax', 'tow', 'Shipment', 'vat', 'custom', 'port_clearance_fee', 'purchase_fee', 'recovery_fee', 'repairing_cost', 'sales_agent_fee', 'Selling_price')
-    def _compute_selling_price(self):
+
+
+    @api.constrains('profit_margin')
+    def _check_profit_margin(self):
+            for rec in self:
+                if rec.profit_margin > 100:
+                    raise ValidationError("Profit margin cannot be greater than 100.")
+            
+
+    @api.depends('bidding_price', 'dealership_tax', 'tow', 'Shipment', 'vat', 'custom', 'port_clearance_fee', 'purchase_fee', 'recovery_fee', 'repairing_cost', 'sales_agent_fee', 'profit_margin')
+    def _compute_total_cost(self):
         for record in self:
+            record.selling_price = False
             total_amount = (
                 record.bidding_price +
                 record.dealership_tax +
@@ -73,38 +82,27 @@ class Vehicle(models.Model):
                 record.purchase_fee +
                 record.recovery_fee +
                 record.repairing_cost +
-                record.sales_agent_fee +
-                record.Selling_price  # Include Selling Price in the total amount calculation
+                record.sales_agent_fee # Include Selling Price in the total amount calculation
             )
-            record.total_cost = total_amount - record.Selling_price  # Subtract Selling Price from the total amount
+            record.total_cost = total_amount  # Subtract Selling Price from the total amount
+            # record.Selling_price = ((record.total_cost * record.profit_margin)/100) + record.total_cost
 
-            # Calculate profit margin as a percentage without including selling price in total cost
-            if total_amount != 0:
-                record.profit_margin = ((record.Selling_price - record.total_cost) / record.Selling_price) * 100
-            else:
-                record.profit_margin = 0
-
-
+    @api.depends('total_cost')
+    def _compute_selling_price(self):
+        for rec in self:
+            rec.selling_price = rec.total_cost * rec.profit_margin + rec.total_cost
 
 
-
-    shipment_date = fields.Date(string='Shipment Date')
-
-    def action_trigger_shipment_wizard(self):
-        return {
-            'type': 'ir.actions.act_window',
-            'name': 'Shipment Wizard',
-            'res_model': 'shipment.wizard',
-            'view_mode': 'form',
-            'view_type': 'form',
-            'target': 'new',
-        }
 
 
     @api.depends('state')
     def _compute_status_class(self):
         for record in self:
             record.status_class = f'o_status_{record.state}'
+
+    def action_reset_to_draft(self):
+        for record in self:
+            record.state = 'draft'
 
     def action_mark_won(self):
         for record in self:
@@ -131,11 +129,19 @@ class Vehicle(models.Model):
         for record in self:
             record.state = 'sold'
 
+    # def action_reset_to_draft(self):
+    #     for record in self:
+    #         if record.state == 'dock':
+    #             record.write({'state': 'draft'})
+
     @api.model
     def create(self, vals):
         vals['reference'] = self.env['ir.sequence'].next_by_code('cds.vehicle.sequence')
         return super(Vehicle, self).create(vals)
+    
 
+    def _expand_states(self, states, domain, order):
+        return [key for key, val in type(self).state.selection]
 
 
     activity_ids = fields.One2many(
@@ -166,20 +172,6 @@ class Vehicle(models.Model):
     )
 
 
-
-
-
-class ShipmentDetails(models.Model):
-    _name = 'shipment.details'
-    _description = 'Shipment Details'
-
-    vehicle_id = fields.Many2one('cds.vehicle', string='Vehicle', required=True, ondelete='cascade')
-    shipment_date = fields.Date(string='Shipment Date', required=True, default=fields.Date.context_today)
-    origin_port = fields.Char(string='Origin Port', required=True)
-    destination_port = fields.Char(string='Destination Port', required=True)
-    expected_arrival_date = fields.Date(string='Expected Arrival Date', required=True)
-    tracking_number = fields.Char(string='Tracking Number', required=True)
-    transportation_company = fields.Char(string='Transportation Company', required=True)
 
 
 class VehicleCategory(models.Model):

@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "vehicle",
+    'name': "shipment",
 
     'summary': """
-        Car Dealing and Shipment""",
+       Shipment""",
 
     'description': """
-        Vehicle description
+        Shipment description
     """,
 
-    'author': "Netlinks",
-    'website': "https://www.netlinks.ltd.com",
+    'author': "My Company",
+    'website': "https://www.yourcompany.com",
 
     # Categories can be used to filter modules in modules listing
     # Check https://github.com/odoo/odoo/blob/16.0/odoo/addons/base/data/ir_module_category_data.xml
@@ -19,15 +19,14 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'mail'],
+    'depends': ['base', 'vehicle', 'mail'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        # 'wizard/shipment_wizard.xml',
-        'views/vehicle_view.xml',
+        'views/shipment_view.xml',
+        'views/vehicle_views.xml',
+        'wizard/shipment_wizard.xml',
         'data/sequences.xml',
-        
     ],
 }
-

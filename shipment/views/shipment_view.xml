@@ -1,0 +1,186 @@
+<odoo>
+  <data>
+
+  <record id="shipment_details_view_tree" model="ir.ui.view">
+    <field name="name">shipment_details.view.tree</field>
+    <field name="model">shipment.details</field>
+    <field name="arch" type="xml">
+      <tree string="">
+        <field name="reference" />
+        <field name="shipment_date"/>
+        <field name="tracking_number" />
+        <field name="transportation_company" />
+        <field name="expected_arrival_date" />
+        <field name="origin_port" />
+        <field name="destination_port" />
+        <field name="state" />
+      </tree>
+    </field>
+  </record>
+
+    <record id="shipment_details_view_form" model="ir.ui.view">
+      <field name="name">shipment_details.view.form</field>
+      <field name="model">shipment.details</field>
+      <field name="arch" type="xml">
+        <form string="">
+
+              <header>
+                  <button name="action_mark_in_progress" string="In progress" type="object"
+                          attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                  <button name="action_mark_completed" string="Completed" type="object"
+                          attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
+                  <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,completed"/>
+              </header>
+
+          <sheet>
+              <style>
+                  .oe_avatar_left {
+                      float: right;
+                  margin-right: 75px;
+                  }
+              </style>
+              
+                    <div class="oe_button_box" name="button_box_pricing">
+                      <widget name="web_ribbon" title="In progress"  bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
+                      <widget name="web_ribbon" title="Completed"  bg_color="bg-success"  attrs="{'invisible': [('state', '!=', 'completed')]}"/>
+                    </div>
+
+                <div class="oe_button_box" name="button_box"></div>
+
+                  <div class="oe_avatar_left">
+                      <field name="image" widget='image' class="oe_avatar"/>
+                  </div>
+
+                  <div class="oe_title">
+                      <h1>
+                          <field name="reference"/>
+                      </h1>
+                  </div>
+
+            <group name="shipment" string="Shipment">
+                <group>
+                  <field name="shipment_date"/>
+                  <field name="origin_port" />
+                  <field name="destination_port" />
+                </group>
+
+                <group>
+                    <field name="expected_arrival_date" />
+                    <field name="tracking_number" />
+                    <field name="transportation_company" />
+                </group>
+
+            </group>
+
+      <notebook editable="bottom">
+          <page name="vehicles" string="Vehicles">
+              <field name="vehicle_ids">
+                  <tree editable="bottom" create="false" delete="false">
+                    <field name="name" readonly="1"/>
+                    <field name="year" readonly="1"/>
+                    <field name="model" readonly="1"/>
+                    <field name="category" readonly="1"/>
+                    <field name="make" readonly="1"/>
+                  </tree>
+              </field>
+          </page>
+      </notebook>
+
+          </sheet>
+
+              <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+              </div>
+
+        </form>
+      </field>
+    </record>
+
+    <record id="shipment_details_view_search" model="ir.ui.view">
+      <field name="name">shipment.details.view.search</field>
+      <field name="model">shipment.details</field>
+      <field name="arch" type="xml">
+        <search string="">
+          <field name="reference"/>
+          <field name="tracking_number"/>
+          <field name="transportation_company"/>
+          <filter name="filter_today" string="Arriving Today" domain="[('expected_arrival_date', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0,0,0))), ('expected_arrival_date', '&lt;=', datetime.datetime.combine(context_today(), datetime.time(23,59,59)))]"/>
+           <group expand="0" string="Group By">
+                  <filter name="state" string="State" context="{'group_by': 'state'}" />
+                  <filter name="shipment_date" string="Shipment Date" context="{'group_by': 'shipment_date'}" />
+                  <filter name="expected_arrival_date" string="Expected Arrival Date" context="{'group_by': 'expected_arrival_date'}" />
+            </group>
+        </search>
+      </field>
+    </record>
+
+
+          <record id="shipment_details_kanban" model="ir.ui.view">
+          <field name="name">shipment_details_view_kanban</field>
+          <field name="model">shipment.details</field>
+          <field name="priority">10</field>
+          <field name="arch" type="xml">
+              <kanban default_group_by="state" sample="1" records_draggable="0">
+                  <templates>
+                       <t t-name="kanban-box">
+                       <progressbar field="state" colors='{}'/>
+                        <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_hr_kanban_record">
+                              <field name="image" class="o_kanban_image_fill_left d-block" preview_image="image_128" widget="background_image" options="{'zoom': true, 'zoom_delay': 1000}"/>
+                            <div class="oe_kanban_details">
+                                <div class="o_kanban_record_top">
+                                      <div class="o_kanban_record_headings">
+                                          <ul>
+                                              <li><b>Reference:</b>&#160;<field name="reference"/></li>
+                                              <li><b>Origin Port:</b>&#160;<field name="origin_port"/></li>
+                                              <li><b>Shipment Date:</b>&#160;<field name="shipment_date"/></li>
+                                              <li><b>Tracking Number:</b>&#160;<field name="tracking_number"/></li>
+                                              <li><b>Transportation Company:</b>&#160;<field name="transportation_company"/></li>
+                                              <!-- <li><b>Make:</b>&#160;<field name="make"/></li> -->
+                                          </ul>
+                                      </div>
+                                </div>
+                            </div>
+                             <div class="oe_kanban_bottom_right">
+                                    <field name="state" widget="label_selection" options="{'classes': {'draft': 'default', 'cancel': 'default', 'done': 'success'}}"/>
+                              </div>
+                          </div>
+                    </t>
+                  </templates>
+              </kanban>
+          </field>
+        </record>
+
+    <!-- actions opening views on models -->
+
+    <record model="ir.actions.act_window" id="shipment.action_window">
+      <field name="name">Shipment Details</field>
+      <field name="res_model">shipment.details</field>
+      <field name="view_mode">kanban,tree,form</field>
+    </record>
+
+
+
+
+
+
+
+
+    <!-- Top menu item -->
+
+    <menuitem name="Shipment" id="shipment.menu_root" web_icon="shipment,static/description/icon(1).png"/>
+
+    <!-- menu categories -->
+
+    <menuitem name="Shipment Details" id="shipment.menu_1" parent="shipment.menu_root" action="shipment.action_window"/>
+
+    <!-- actions -->
+<!--
+    <menuitem name="List" id="shipment.menu_1_list" parent="shipment.menu_1"
+              action="shipment.action_window"/>
+    <menuitem name="Server to list" id="shipment" parent="shipment.menu_2"
+              action="shipment.action_server"/>
+-->
+  </data>
+</odoo>

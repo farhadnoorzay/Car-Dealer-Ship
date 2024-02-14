@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="vehicle_view_form_inheritvehicle" model="ir.ui.view">
+        <field name="name">cds.vehicle.view.form.inherit</field>
+        <field name="model">cds.vehicle</field>
+        <field name="inherit_id" ref="vehicle.vehicle_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_trigger_shipment_wizard" string="Shipment" type="object"
+                        attrs="{'invisible': [('state', '!=', 'won')]}"/>
+            </xpath>
+            <xpath expr="//sheet" position="inside">
+                <field name="shipment_id" invisible="1"/>
+                <notebook>
+                    <page name="shipment_details" string="Shipment Details" attrs="{'invisible': [('shipment_id', '=', False)]}">
+                        <group>
+                            <group>
+                                <field name="shipment_date" />
+                                <field name="origin_port" />
+                                <field name="destination_port" />
+                            </group>
+                            <group>
+                                <field name="expected_arrival_date" />
+                                <field name="tracking_number" />
+                                <field name="transportation_company" />
+                            </group>
+                        </group>
+                    </page>
+                </notebook>
+            </xpath>
+        </field>
+    </record>
+
+
+</odoo>

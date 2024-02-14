@@ -1,29 +1,39 @@
 <odoo>
     <data>
         <record id="view_cds_vehicle_shipment_wizard_form" model="ir.ui.view">
-            <field name="name">shipment.wizard.form</field>
+            <field name="name">shipment.form</field>
             <field name="model">shipment.wizard</field>
             <field name="arch" type="xml">
                 <form>
+                
                     <group>
+                        <field name="shipment_id"/>
+                    </group>
+
+                    <group >
+                      
+                        
                         <group>
                             <field name="shipment_date"/>
                             <field name="origin_port"/>
                             <field name="destination_port"/>
                         </group>
-                            <group>
+
+                        <group>
                             <field name="expected_arrival_date"/>
                             <field name="tracking_number"/>
                             <field name="transportation_company"/>
-                            </group>
-                      
+                        </group>
+                    
                     </group>
+
+
                     <footer>
-                        <button string="Confirm Shipment" type="object" class="oe_highlight" name="confirm_shipment"/>
+                        <button string="Confirm Shipment" type="object" name="confirm_shipment"/>
                         <button string="Cancel" class="oe_link" special="cancel"/>
                     </footer>
-                </form>
-            </field>
-        </record>
-    </data>
-</odoo>
+                    </form>
+                </field>
+            </record>
+        </data>
+    </odoo>

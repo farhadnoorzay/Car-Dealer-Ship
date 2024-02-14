@@ -1,17 +1,20 @@
 <odoo>
     <data>
-
         <!-- explicit list view definition -->
-
         <record id="vehicle_view_tree" model="ir.ui.view">
             <field name="name">vehicle.view.tree</field>
             <field name="model">cds.vehicle</field>
             <field name="arch" type="xml">
                 <tree string="">
+                    <field name="reference" />
                     <field name="name" />
+                    <field name="state" />
                     <field name="year"/>
                     <field name="category"/>
                     <field name="model" />
+                    <field name="key"/>
+                    <field name="total_cost" />
+                    <field name="selling_price" />
                 </tree>
             </field>
         </record>
@@ -22,27 +25,25 @@
             <field name="arch" type="xml">
                 <form string="">
                     <header>
-                        <button name="action_trigger_shipment_wizard" string="Shipment" type="object" class="oe_highlight"
-                                attrs="{'invisible': [('state', '!=', 'won')]}"/>
-                        <button name="action_mark_won" string="Won" type="object" class="oe_highlight"
+                        <button name="action_mark_won" string="Won" type="object"
                                 attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                        <button name="action_mark_lost" string="Lost" type="object" class="oe_highlight"
+                        <button name="action_mark_lost" string="Lost" type="object"
                                 attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                        <button name="action_trigger_maintenance" string="Maintenance" type="object" class="oe_highlight"
+                        <button name="action_trigger_maintenance" string="Maintenance" type="object"
                                 attrs="{'invisible': [('state', '!=', 'dock')]}"/>
-                        <button name="action_mark_sold" string="Sold" type="object" class="oe_highlight"
+                        <button name="action_mark_sold" string="Sold" type="object"
                                 attrs="{'invisible': [('state', '!=', 'maintenance')]}"/>
-                        <button name="action_mark_dock" string="Dock" type="object" class="oe_highlight"
-                                attrs="{'invisible': [('state', 'not in', ['shipment',])]}"/>
-                        <field name="state" widget="statusbar" statusbar_visible="draft,won,lost,shipment_confirmed,dock,maintenance"/>
+                        <button name="action_mark_dock" string="Dock" type="object"
+                                attrs="{'invisible': [('state', 'not in', 'shipment_confirmed')]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,won,lost,shipment_confirmed,dock,maintenance,sold"/>
+                        <button name="action_reset_to_draft" string="Draft" type="object" attrs="{'invisible': [('state', 'not in', ('dock', 'maintenance','won'))]}"/>
 
 
-                        
                     </header>
                     <sheet>
                     <style>
                         .oe_avatar_left {
-                            float: right;
+                            float: left;
                         margin-right: 75px;
                         }
                     </style>
@@ -59,25 +60,48 @@
                         </div>
                         <div class="oe_title">
                             <h1>
-                                <field name="reference" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock', 'draft', 'won'])]}"/>
+                                <field name="reference" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock', 'draft', 'won', 'lost', 'shipment_confirmed'])]}"/>
                             </h1>
                         </div>
                         <group>
-                            <group name="detail" string="Vehicle Detail">
-                                <field name="name" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="lot" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="year" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="make" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="category" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="model" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="sub_model" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="vin_number" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="location" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="key" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="trim_level" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                            </group>
+                                <group name="vehicle_details" string="Vehicle Details">
+                                    <field name="name" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="lot" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="year" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="make" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="category" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="model" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="sub_model" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="vin_number" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="location" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="key" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="trim_level" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                </group>
+                            
 
-                            <group name="detail" string="Pricing Details">
+                        <group>
+                                <group name="estimated_pricing_details" string=" Estimated Pricing Details">
+                                    <field name="currency" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="bidding_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="dealership_tax" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="yard" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="tow" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="Shipment" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="vat" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="custom" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="port_clearance_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="purchase_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="recovery_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="repairing_cost" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="sales_agent_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="profit_margin"  attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}" widget="percentage"/>
+                                    <field name="total_cost" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="selling_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                    <field name="state" invisible="1"/>
+                                </group>
+
+
+                            <group name="original_pricing_details" string="Original Pricing Details">
                                 <field name="currency" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
                                 <field name="bidding_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
                                 <field name="dealership_tax" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
@@ -93,24 +117,13 @@
                                 <field name="sales_agent_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
                                 <field name="profit_margin"  attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}" widget="percentage"/>
                                 <field name="total_cost" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="Selling_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <!-- <field name="applied_percentage" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/> -->
+                                <field name="selling_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
                                 <field name="state" invisible="1"/>
                             </group>
                         </group>
-                          <notebook>
-                            <page name="shipment_details" string="Shipment Details">
-                                <field name="shipment_details_ids" widget="one2many_list">
-                                    <tree editable="bottom" create="0">  <!-- Set create="0" here -->
-                                        <field name="origin_port"/>
-                                        <field name="destination_port"/>
-                                        <field name="expected_arrival_date"/>
-                                        <field name="tracking_number"/>
-                                        <field name="transportation_company"/>
-                                    </tree>
-                                </field>
-                            </page>
-                        </notebook>
+
+                        </group>
+                        
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids"/>
@@ -133,40 +146,47 @@
                     <group expand="0" string="Group By">
                         <filter name="year" string="Year" context="{'group_by': 'year'}" />
                         <filter name="category" string="Category" context="{'group_by': 'category'}" />
+                        <filter name="state" string="State" context="{'group_by': 'state'}" />
                     </group>
                 </search>
             </field>
         </record>
 
-        <record id="parent_kanban" model="ir.ui.view">
-            <field name="name">cds_vehicle_view_kanban</field>
-            <field name="model">cds.vehicle</field>
-            <field name="priority">10</field>
-            <field name="arch" type="xml">
-                <kanban sample="1">
-                    <templates>
-                        <t t-name="kanban-box">
-                            <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_hr_kanban_record">
-                                <field name="image" class="o_kanban_image_fill_left d-block" preview_image="image_128" widget="background_image" options="{'zoom': true, 'zoom_delay': 1000}"/>
-                                <div class="oe_kanban_details">
-                                    <div class="o_kanban_record_top">
-                                        <div class="o_kanban_record_headings">
-                                            <ul>
-                                                <li><b>Name:</b>&#160;<field name="name"/></li>
-                                                <li><b>Model:</b>&#160;<field name="model"/></li>
-                                                <li><b>Year:</b>&#160;<field name="year"/></li>
-                                                <li><b>Category:</b>&#160;<field name="category"/></li>
-                                                <li><b>Trim Level:</b>&#160;<field name="trim_level"/></li>
-                                                <li><b>Make:</b>&#160;<field name="make"/></li>
-                                            </ul>
-                                        </div>
-                                    </div>
+          <record id="cds_vehicle_kanban" model="ir.ui.view">
+          <field name="name">cds_vehicle_view_kanban</field>
+          <field name="model">cds.vehicle</field>
+          <field name="priority">10</field>
+          <field name="arch" type="xml">
+              <kanban default_group_by="state" sample="1" records_draggable="0">
+                  <templates>
+                       <t t-name="kanban-box">
+                         <progressbar field="state" colors='{}'/>
+                        <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_hr_kanban_record">
+                              <field name="image" class="o_kanban_image_fill_left d-block" preview_image="image_128" widget="background_image" options="{'zoom': true, 'zoom_delay': 1000}"/>
+                            <div class="oe_kanban_details">
+                                <div class="o_kanban_record_top">
+                                      <div class="o_kanban_record_headings">
+                                          <ul>
+                                                <li><h4><field name="reference"/></h4></li>
+                                                <li><h6>Name:<field name="name"/></h6></li>
+                                                <li><h6>Model:<field name="model"/></h6></li>
+                                                <li><h6>Year:<field name="year"/></h6></li>
+                                                <li><h6>Category:<field name="category"/></h6></li>
+                                                <li><h6>Trim Level:<field name="trim_level"/></h6></li>
+                                                <li><h6>Make:<field name="make"/></h6></li>
+                                              <!-- <li><b>Make:</b>&#160;<field name="make"/></li> -->
+                                          </ul>
+                                      </div>
                                 </div>
                             </div>
-                        </t>
-                    </templates>
-                </kanban>
-            </field>
+                             <div class="oe_kanban_bottom_right">
+                                    <field name="state" widget="label_selection" options="{'classes': {'draft': 'default', 'cancel': 'default', 'done': 'success'}}"/>
+                              </div>
+                          </div>
+                    </t>
+                  </templates>
+              </kanban>
+          </field>
         </record>
 
         <!-- actions opening views on models -->
@@ -179,7 +199,7 @@
 
         <!-- Top menu item -->
 
-        <menuitem name="Vehicle" id="vehicle.menu_root" web_icon="vehicle,static/description/odoo_icon.png"/>
+        <menuitem name="Vehicle" id="vehicle.menu_root" web_icon="vehicle,static/description/odoo_icon(1).png"/>
 
         <!-- menu categories -->
 

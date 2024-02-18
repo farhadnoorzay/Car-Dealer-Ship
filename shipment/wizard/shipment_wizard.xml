@@ -14,15 +14,15 @@
                       
                         
                         <group>
-                            <field name="shipment_date"/>
-                            <field name="origin_port"/>
-                            <field name="destination_port"/>
+                            <field name="shipment_date" />
+                            <field name="origin_port" />
+                            <field name="destination_port" />
                         </group>
 
                         <group>
-                            <field name="expected_arrival_date"/>
-                            <field name="tracking_number"/>
-                            <field name="transportation_company"/>
+                            <field name="expected_arrival_date" />
+                            <field name="tracking_number" />
+                            <field name="transportation_company" />
                         </group>
                     
                     </group>

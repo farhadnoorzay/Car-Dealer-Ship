@@ -43,7 +43,7 @@
                     <sheet>
                     <style>
                         .oe_avatar_left {
-                            float: left;
+                            float: right;
                         margin-right: 75px;
                         }
                     </style>
@@ -77,51 +77,44 @@
                                     <field name="key" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
                                     <field name="trim_level" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
                                 </group>
-                            
-
-                        <group>
-                                <group name="estimated_pricing_details" string=" Estimated Pricing Details">
-                                    <field name="currency" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                    <field name="bidding_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                    <field name="dealership_tax" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                    <field name="yard" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                    <field name="tow" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                    <field name="Shipment" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                    <field name="vat" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                    <field name="custom" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                    <field name="port_clearance_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                    <field name="purchase_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                    <field name="recovery_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                    <field name="repairing_cost" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                    <field name="sales_agent_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                    <field name="profit_margin"  attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}" widget="percentage"/>
-                                    <field name="total_cost" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                    <field name="selling_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                    <field name="state" invisible="1"/>
-                                </group>
-
-
-                            <group name="original_pricing_details" string="Original Pricing Details">
-                                <field name="currency" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="bidding_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="dealership_tax" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="yard" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="tow" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="Shipment" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="vat" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="custom" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="port_clearance_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="purchase_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="recovery_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="repairing_cost" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="sales_agent_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="profit_margin"  attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}" widget="percentage"/>
-                                <field name="total_cost" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="selling_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                <field name="state" invisible="1"/>
-                            </group>
-                        </group>
-
+                                    <group name="estimated_pricing_details" string=" Estimated Pricing Details" attrs="{'invisible': [('state', 'in', ['maintenance', 'sold'])]}">
+                                        <field name="currency" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="bidding_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="dealership_tax" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="yard" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="tow" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="Shipment" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="vat" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="custom" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="port_clearance_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="purchase_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="recovery_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="repairing_cost" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="sales_agent_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="profit_margin"  attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}" widget="percentage"/>
+                                        <field name="total_cost" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="selling_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="state" invisible="1"/>
+                                    </group>
+                                    <group name="original_pricing_details" string="Original Pricing Details" attrs="{'invisible': [('state', 'not in', ['maintenance','sold'])]}">
+                                        <field name="original_currency" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="original_bidding_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="original_dealership_tax" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="original_yard" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="original_tow" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="original_Shipment" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="original_vat" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="original_custom" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="original_port_clearance_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="original_purchase_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="original_recovery_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="original_repairing_cost" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="original_sales_agent_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="original_profit_margin"  attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}" widget="percentage"/>
+                                        <field name="original_total_cost" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="original_selling_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="state" invisible="1"/>
+                                    </group>
                         </group>
                         
                     </sheet>
@@ -162,18 +155,18 @@
                        <t t-name="kanban-box">
                          <progressbar field="state" colors='{}'/>
                         <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_hr_kanban_record">
-                              <field name="image" class="o_kanban_image_fill_left d-block" preview_image="image_128" widget="background_image" options="{'zoom': true, 'zoom_delay': 1000}"/>
+                            <field name="image" class="o_kanban_image_fill_left d-block" preview_image="image_128" widget="background_image" options="{'zoom': true, 'zoom_delay': 1000}"/>
                             <div class="oe_kanban_details">
                                 <div class="o_kanban_record_top">
                                       <div class="o_kanban_record_headings">
                                           <ul>
                                                 <li><h4><field name="reference"/></h4></li>
-                                                <li><h6>Name:<field name="name"/></h6></li>
-                                                <li><h6>Model:<field name="model"/></h6></li>
-                                                <li><h6>Year:<field name="year"/></h6></li>
-                                                <li><h6>Category:<field name="category"/></h6></li>
-                                                <li><h6>Trim Level:<field name="trim_level"/></h6></li>
-                                                <li><h6>Make:<field name="make"/></h6></li>
+                                                <li><h6>Name: <field name="name"/></h6></li>
+                                                <li><h6>Model: <field name="model"/></h6></li>
+                                                <li><h6>Year: <field name="year"/></h6></li>
+                                                <li><h6>Category: <field name="category"/></h6></li>
+                                                <li><h6>key: <field name="key"/></h6></li>
+                                                <li><h6>Make: <field name="make"/></h6></li>
                                               <!-- <li><b>Make:</b>&#160;<field name="make"/></li> -->
                                           </ul>
                                       </div>

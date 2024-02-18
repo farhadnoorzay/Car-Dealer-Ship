@@ -7,6 +7,7 @@ class Vehicle(models.Model):
     _inherit = 'cds.vehicle'
 
     shipment_id = fields.Many2one('shipment.details')
+    shipment_reference = fields.Char(string='Shipment Reference', related='shipment_id.reference')
     shipment_date = fields.Date(string='Shipment Date', related='shipment_id.shipment_date')
     origin_port = fields.Char(string='Origin Port', related='shipment_id.origin_port')
     destination_port = fields.Char(string='Destination Port', related='shipment_id.destination_port')

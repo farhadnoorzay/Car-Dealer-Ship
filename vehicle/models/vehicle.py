@@ -48,6 +48,25 @@ class Vehicle(models.Model):
     status_class = fields.Char(compute='_compute_status_class', string='Status Class', store=False)
     selling_price = fields.Monetary(string='Selling Price', currency_field='currency', compute='_compute_selling_price', store=True)
     total_cost = fields.Monetary(string='Total Cost', currency_field='currency', compute='_compute_total_cost', store=True)
+
+    
+    original_bidding_price = fields.Monetary(string='Bidding Price', currency_field='currency', required=True)
+    original_currency = fields.Many2one('res.currency', string='Currency')
+    original_dealership_tax = fields.Monetary(string='Dealership Tax', currency_field='currency')
+    original_yard = fields.Monetary(string='Yard', currency_field='currency')
+    original_tow = fields.Monetary(string='Tow', currency_field='currency', required=True)
+    original_Shipment = fields.Monetary(string='Shipment', currency_field='currency', required=True)
+    original_vat = fields.Monetary(string='VAT', currency_field='currency', required=True)
+    original_custom = fields.Monetary(string='Custom', currency_field='currency', required=True)
+    original_port_clearance_fee = fields.Monetary(string='Port Clearance Fee', currency_field='currency', required=True)
+    original_purchase_fee = fields.Monetary(string='Purchase Agent Fee', currency_field='currency', required=True)
+    original_recovery_fee = fields.Monetary(string='Recovery Fee', currency_field='currency', required=True)
+    original_repairing_cost = fields.Monetary(string='Repairing Cost', currency_field='currency', required=True)
+    original_sales_agent_fee = fields.Monetary(string='Sales Agent Fee', currency_field='currency', required=True)
+    original_status_class = fields.Char(compute='_compute_original_status_class', string='Status Class', store=False)
+    original_profit_margin = fields.Float(string='Profit Margin', required=True)
+    original_selling_price = fields.Monetary(string='Selling Price', currency_field='currency', compute='_compute_original_selling_price', store=True)
+    original_total_cost = fields.Monetary(string='Total Cost', currency_field='currency', compute='_compute_original_total_cost', store=True)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('won', 'Won'),
@@ -67,13 +86,14 @@ class Vehicle(models.Model):
                     raise ValidationError("Profit margin cannot be greater than 100.")
             
 
-    @api.depends('bidding_price', 'dealership_tax', 'tow', 'Shipment', 'vat', 'custom', 'port_clearance_fee', 'purchase_fee', 'recovery_fee', 'repairing_cost', 'sales_agent_fee', 'profit_margin')
+    @api.depends('bidding_price', 'dealership_tax','yard', 'tow', 'Shipment', 'vat', 'custom', 'port_clearance_fee', 'purchase_fee', 'recovery_fee', 'repairing_cost', 'sales_agent_fee', 'profit_margin')
     def _compute_total_cost(self):
         for record in self:
             record.selling_price = False
             total_amount = (
                 record.bidding_price +
                 record.dealership_tax +
+                record.yard +
                 record.tow +
                 record.Shipment +
                 record.vat +
@@ -91,6 +111,33 @@ class Vehicle(models.Model):
     def _compute_selling_price(self):
         for rec in self:
             rec.selling_price = rec.total_cost * rec.profit_margin + rec.total_cost
+
+
+    @api.depends('original_bidding_price','original_dealership_tax', 'original_yard', 'original_tow', 'original_Shipment', 'original_vat', 'original_custom', 'original_port_clearance_fee', 'original_purchase_fee', 'original_recovery_fee', 'original_repairing_cost', 'original_sales_agent_fee', 'original_profit_margin')
+    def _compute_original_total_cost(self):
+        for record in self:
+            record.original_selling_price = False
+            total_amount = (
+                record.original_bidding_price +
+                record.original_dealership_tax +
+                record.original_yard +
+                record.original_tow +
+                record.original_Shipment +
+                record.original_vat +
+                record.original_custom +
+                record.original_port_clearance_fee +
+                record.original_purchase_fee +
+                record.original_recovery_fee +
+                record.original_repairing_cost +
+                record.original_sales_agent_fee # Include Selling Price in the total amount calculation
+            )
+            record.original_total_cost = total_amount  # Subtract Selling Price from the total amount
+            # record.Selling_price = ((record.total_cost * record.profit_margin)/100) + record.total_cost
+
+    @api.depends('original_total_cost')
+    def _compute_original_selling_price(self):
+        for rec in self:
+            rec.original_selling_price = rec.original_total_cost * rec.original_profit_margin + rec.original_total_cost
 
 
 
@@ -144,32 +191,32 @@ class Vehicle(models.Model):
         return [key for key, val in type(self).state.selection]
 
 
-    activity_ids = fields.One2many(
-        'mail.activity',
-        'res_id',
-        domain=lambda self: [('res_model', '=', 'cds.vehicle')],
-        string='Activities',
-        auto_join=True,
-        help="Activities related to this vehicle",
-    )
+    # activity_ids = fields.One2many(
+    #     'mail.activity',
+    #     'res_id',
+    #     domain=lambda self: [('res_model', '=', 'cds.vehicle')],
+    #     string='Activities',
+    #     auto_join=True,
+    #     help="Activities related to this vehicle",
+    # )
 
-    message_follower_ids = fields.Many2many(
-        'mail.followers',
-        'mail_followers_rel',
-        'res_id',
-        'partner_id',
-        string="Followers",
-        copy=False,
-    )
+    # message_follower_ids = fields.Many2many(
+    #     'mail.followers',
+    #     'mail_followers_rel',
+    #     'res_id',
+    #     'partner_id',
+    #     string="Followers",
+    #     copy=False,
+    # )
 
-    message_ids = fields.One2many(
-        'mail.message',
-        'res_id',
-        domain=lambda self: [('model', '=', 'cds.vehicle')],
-        string='Messages',
-        auto_join=True,
-        help="Messages and communication history",
-    )
+    # message_ids = fields.One2many(
+    #     'mail.message',
+    #     'res_id',
+    #     domain=lambda self: [('model', '=', 'cds.vehicle')],
+    #     string='Messages',
+    #     auto_join=True,
+    #     help="Messages and communication history",
+    # )
 
 
 

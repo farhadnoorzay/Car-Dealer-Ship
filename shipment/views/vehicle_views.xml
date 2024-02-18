@@ -16,6 +16,7 @@
                     <page name="shipment_details" string="Shipment Details" attrs="{'invisible': [('shipment_id', '=', False)]}">
                         <group>
                             <group>
+                                <field name="shipment_reference" />
                                 <field name="shipment_date" />
                                 <field name="origin_port" />
                                 <field name="destination_port" />

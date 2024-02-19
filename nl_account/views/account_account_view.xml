@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+    
+        <record id="inherit_view_account_form_account" model="ir.ui.view">
+            <field name="name">account.account.view.form.inherit</field>
+            <field name="model">account.account</field>
+            <field name="inherit_id" ref="account.view_account_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button class="oe_stat_button" 
+                            name="account.action_move_line_select"
+                            type="action" 
+                            icon="fa-bars"
+                            style="width: 188px;">
+                        <div class="o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="current_balance_in_currency" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            </span>
+                            <span class="o_stat_text">
+                                Balance in Currency
+                            </span>
+                        </div>
+                    </button>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_account_list_inherit0" model="ir.ui.view">
+            <field name="name">view.account.list.inherit0</field>
+            <field name="model">account.account</field>
+            <field name="inherit_id" ref="account.view_account_list"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='currency_id']" position="after">
+                    <field name="current_balance_in_currency" string="Balance in Currency" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_account_account_kanban_inherit0" model="ir.ui.view">
+            <field name="name">view.account.account.kanban</field>
+            <field name="model">account.account</field>
+            <field name="inherit_id" ref="account.view_account_account_kanban"/>
+            <field name="arch" type="xml">
+                <xpath expr="//kanban/field[@name='account_type']" position="after">
+                    <field name="current_balance_in_currency" />
+                    <field name="currency_id" />
+                </xpath>
+                <xpath expr="//div" position="replace">
+                    <div t-attf-class="oe_kanban_global_click">
+                        <div class="row">
+                            <div class="col-8">
+                                <strong><field name="name"/></strong>
+                            </div>
+                            <div class="col-4 text-end">
+                                <span class="badge badge-pill"><t t-esc="record.code.value"/></span>
+                            </div>
+                        </div>
+                        <div>
+                            <strong>Type: </strong><t t-esc="record.account_type.value"/>
+                        </div>
+                        <div class="text-right">
+                            <span><field name="current_balance_in_currency" widget="monetary"/></span>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="account_account_statement_report" model="ir.actions.server">
+            <field name="name">Account Statement Report</field>
+            <field name="model_id" ref="account.model_account_account"/>
+            <field name="binding_model_id" ref="account.model_account_account"/>
+            <field name="state">code</field>
+            <field name="code">if records:
+                action = records.action_account_statement_wizard()</field>
+            <field name="binding_type">report</field>
+        </record>
+
+    </data>
+    
+</odoo>

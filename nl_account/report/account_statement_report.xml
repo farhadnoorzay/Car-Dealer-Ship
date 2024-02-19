@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="account_statement_report_template" name="Account Statement Report">
+        <t t-call="web.basic_layout">
+            <style>
+                table {
+                    border-collapse: collapse;
+                }
+                .table th, .table td {
+                    padding: 6px !important;
+                    border: 1px solid #a1a1a1 !important;
+                    vertical-align: middle;
+                }
+                .table th {
+                    background: #f1f1f1;
+                    color: black;
+                    text-transform: uppercase;
+                    padding: 8px 6px !important;
+                }
+                .simple {
+                    border-left:none !important;
+                    border-right:none !important;
+                }
+                td {
+                    text-align:center;
+                }
+                tbody {
+                    font-size: 13px !important;
+                    border-top:none !important;
+                }
+                thead {
+                    font-size: 13px !important;
+                }
+                .heading {
+                    background: #eaeaea;
+                }
+            </style>
+            <t t-foreach="docs.sudo()" t-as="o">
+                <t t-set="company" t-value="journal_id.company_id if journal_id else account_id.company_id"/>
+                <t t-set="balance_currency" t-value="account_balance.get('balance_currency') or 0"/>
+                <t t-set="opening_balance_currency" t-value="balance_currency"/>
+                <t t-set="total_debit" t-value="0"/>
+                <t t-set="total_credit" t-value="0"/>
+                <t t-set="currency_option" t-value="{'widget': 'monetary', 'display_currency': account_id.currency_id}"/>
+                <div class="page">
+                    <div>
+                        <!-- Header -->
+                        <div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 100px;max-width:100px" alt="Logo"/>
+                                </div>
+                                <div class="col-4"></div>
+                                <div class="col-4 mt-4" style="font-size:15px;">
+                                    <div t-out="company.name"/>
+                                    <div class="py-1" t-out="company.phone"/>
+                                    <div t-out="company.street"/>
+                                </div>
+                            </div>
+                            <div class="row mb-4 mt-4">
+                                <div class="col-12 text-center" style="background: #e1e1e1; padding: 11px 0; ">
+                                    <t t-if="journal_id" >
+                                        BANK &amp; CASH STATEMENT
+                                    </t>
+                                    <t t-else="">
+                                        ACCOUNT STATEMENT
+                                    </t>
+                                </div>
+                            </div>
+                            <div class="row mt-2" style="font-size:13px;">
+                                <div class="col-4">
+                                    <span style="padding-right:3px;  font-weight:600">Period:</span>
+                                    <span t-out="o.from_date.strftime('%Y/%m/%d')"/> -
+                                    <t t-out="o.to_date.strftime('%Y/%m/%d')"/>
+                                </div>
+                                <div class="col-4">
+                                    <span style="padding-right:3px; font-weight:600">
+                                        <t t-out="'Journal: ' if journal_id else 'Account: '"/>
+                                    </span>
+                                    <span t-out="journal_id.name if journal_id else '%s %s' % (account_id.code, account_id.name)"/>
+                                </div>
+                            </div>
+                            <div class="row mt-2" style="font-size:13px;">
+                                <div class="col-4">
+                                    <span style="padding-right:3px;  font-weight:600">Currency:</span>
+                                    <span t-out="account_id.currency_id.name"/>
+                                </div>
+                                <div class="col-4">
+                                    <span style="padding-right:3px; font-weight:600">Opening Balance:</span>
+                                    <span t-out="opening_balance_currency" t-options="currency_option"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:left;">Reference</th>
+                                        <th class="simple">Date</th>
+                                        <th class="simple">Partner</th>
+                                        <th class="simple">Label</th>
+                                        <th class="simple">Debit</th>
+                                        <th class="simple">Credit</th>
+                                        <th>Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="doc_ids" t-as="rec">
+                                        <tr>
+                                            <td style="text-align:left;" t-out="rec.get('name') or ''"></td>
+                                            <td t-out="rec.get('move_date')"></td>
+                                            <td t-out="rec.get('partner_name') or ''"></td>
+                                            <td t-out="rec.get('label') or ''"></td>
+                                            <t t-set="balance_currency" t-value="balance_currency + rec.get('amount_currency')"/>
+                                            <t t-if="rec.get('amount_currency') > 0">
+                                                <t t-set="total_debit" t-value="total_debit + rec.get('amount_currency')"/>
+                                                <td t-out="rec.get('amount_currency')" t-options="currency_option"></td>
+                                                <td></td>
+                                            </t>
+                                            <t t-else="">
+                                                <td></td>
+                                                <td t-out="abs(rec.get('amount_currency'))" t-options="currency_option"></td>
+                                                <t t-set="total_credit" t-value="total_credit + rec.get('amount_currency')"/>
+                                            </t>
+                                            <td t-out="balance_currency" t-options="currency_option"></td>
+                                        </tr>
+                                    </t>
+                                    <tr>
+                                        <td colspan="4" class="text-right" style="background: #f1f1f1">Total</td>
+                                        <td t-out="total_debit" style="background: #f1f1f1" t-options="currency_option"></td>
+                                        <td t-out="abs(total_credit)" style="background: #f1f1f1" t-options="currency_option"></td>
+                                        <td t-out="balance_currency" style="background: #f1f1f1" t-options="currency_option"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+    <record id="paperformat_account_statement_report" model="report.paperformat">
+        <field name="name">Paper format account statement report</field>
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">5</field>
+        <field name="margin_bottom">5</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False" />
+        <field name="header_spacing">51</field>
+        <field name="dpi">90</field>
+    </record>
+    <record id="account_statement_report" model="ir.actions.report">
+        <field name="name">Account Statement Report</field>
+        <field name="model">account.journal</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">nl_account.account_statement_report_template</field>
+        <field name="report_file">nl_account.account_statement_report_template</field>
+        <field name="print_report_name">'Account Statement - %s' % object.name</field>
+        <field name="binding_model_id" ref=""/>
+        <field name="paperformat_id" ref="paperformat_account_statement_report"/>
+    </record>
+</odoo>

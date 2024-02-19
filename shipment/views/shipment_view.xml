@@ -47,10 +47,6 @@
 
                 <div class="oe_button_box" name="button_box"></div>
 
-                  <div class="oe_avatar_left">
-                      <field name="image" widget='image' class="oe_avatar"/>
-                  </div>
-
                   <div class="oe_title">
                       <h1>
                           <field name="reference"/>
@@ -127,8 +123,7 @@
                   <templates>
                        <t t-name="kanban-box">
                        <progressbar field="state" colors='{}'/>
-                        <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_hr_kanban_record">
-                              <field name="image" class="o_kanban_image_fill_left d-block" preview_image="image_128" widget="background_image" options="{'zoom': true, 'zoom_delay': 1000}"/>
+                        <div class="oe_kanban_global_click o_kanban_record_has_image_fill">
                             <div class="oe_kanban_details">
                                 <div class="o_kanban_record_top">
                                       <div class="o_kanban_record_headings">

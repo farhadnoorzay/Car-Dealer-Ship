@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="internal_transfer_fee_form" model="ir.ui.view">
+        <field name="name">internal.transfer.fee.view.form</field>
+        <field name="model">internal.transfer.fee.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="company_id" invisible="1" />
+                <field name="has_fee" invisible="1" />
+                <group>
+                    <group>
+                        <field name="fee_amount" />
+                        <field name="fee_account_id"
+                            options="{'no_create': True, 'no_create_edit': True, 'no_quick_create': True}"
+                            attrs="{ 'invisible': [('has_fee', '=', False)], 'required': [('has_fee', '=', True)] }"
+                        />
+                    </group>
+                    <group>
+                        <field name="journal_id"
+                            options="{'no_create': True, 'no_create_edit': True, 'no_quick_create': True}"
+                            attrs="{ 'invisible': [('has_fee', '=', False)], 'required': [('has_fee', '=', True)] }" />
+                        <field name="currency_id"
+                            attrs="{ 'invisible': [('has_fee', '=', False)], 'required': [('has_fee', '=', True)] }" />
+                        <field name="internal_transfer_id" invisible="1" />
+                    </group>
+                </group>
+                <footer>
+                    <button type="object" name="actoin_submit_transfer" string="Submit"
+                        class="btn-primary" />
+                    <button string="Cancel" class="btn-default" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="internal_transfer_fee_action" model="ir.actions.act_window">
+        <field name="name">Internal Transfers</field>
+        <field name="res_model">internal.transfer.fee.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

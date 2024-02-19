@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="customer_statement_wizard_view_form" model="ir.ui.view">
+        <field name="name">customer.statement.wizard.view.form</field>
+        <field name="model">customer.statement.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="partner_id" readonly="context.get('readonly')"></field>
+                        <field name="from_date" string="Start Date" />
+                    </group>
+                    <group>
+                        <field name="currency_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"></field>
+                        <field name="to_date" string="End Date" />
+                    </group>
+                </group>
+                <footer>
+                    <button type="object" name="action_generate_pdf" string="Generate PDF" class="btn-primary" />
+                    <button type="object" name="action_generate_xls" string="Generate Excel" class="btn-primary" />
+                    <button string="Cancel" class="btn-default" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="customer_statement_wizard_action" model="ir.actions.act_window">
+        <field name="name">Partner Statement Wizard</field>
+        <field name="res_model">customer.statement.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="customer_statement_wizard_menu"
+        name="Partner Statement"
+        action="nl_account.customer_statement_wizard_action"
+        parent="account_reports.account_reports_partners_reports_menu"
+        sequence="11"/>
+</odoo>

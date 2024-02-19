@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="customer_balance_wizard_view_form" model="ir.ui.view">
+        <field name="name">customer.balance.wizard.view.form</field>
+        <field name="model">customer.balance.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="date"/>
+                    </group>
+                    <group>
+                        <field name="currency_ids" widget="many2many_tags" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"></field>
+                    </group>
+                </group>
+                <footer>
+                    <button type="object" name="action_generate_pdf" string="Generate PDF" class="btn-primary" />
+                    <button type="object" name="action_generate_xls" string="Generate Excel" class="btn-primary" />
+                    <button string="Cancel" class="btn-default" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="customer_balance_wizard_action" model="ir.actions.act_window">
+        <field name="name">Partner Balance Wizard</field>
+        <field name="res_model">customer.balance.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="customer_balance_wizard_menu"
+        name="Partner Balance"
+        action="nl_account.customer_balance_wizard_action"
+        parent="account_reports.account_reports_partners_reports_menu"
+        sequence="12"/>
+</odoo>

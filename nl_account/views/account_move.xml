@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="inherit_view_account_view_move_form" model="ir.ui.view">
+        <field name="name">account.move.view.form.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            
+            <xpath expr="//button[@name='action_post']" position="replace">
+                  <button name="action_post" string="Post" class="oe_highlight" type="object" groups="nl_account.group_finance_reviewer,nl_contract.group_ceo" attrs="{'invisible': ['|', '|', ('state', '!=', 'to_approve'), ('move_type', '!=', 'entry'), ('is_approver', '!=', True)]}" />
+            </xpath>
+            <xpath expr="//button[2]" position="replace">
+                  <button name="action_post" string="Confirm" class="oe_highlight" type="object" groups="nl_account.group_finance_reviewer,nl_contract.group_ceo"  attrs="{'invisible': ['|', '|', '|', '|', ('is_approver', '!=', True), ('state', '!=', 'to_approve'), ('auto_post', '=', True), ('move_type', '=', 'entry'), ('display_inactive_currency_warning','=',True)]}"/>
+            </xpath>
+             <xpath expr="//field[@name='state']" position="replace">
+                  <field name="state" widget="statusbar" statusbar_visible="draft,posted" />
+            </xpath>
+            <xpath expr="//button[@name='action_post']" position="after">
+               <button string="Submit for Review" name="action_review" class="oe_highlight"  type="object" attrs="{'invisible': [('state', '!=', 'draft')]}" />
+               <button string="Approve" name="action_to_approve" class="oe_highlight" type="object" attrs="{'invisible': ['|', ('state', '!=', 'review'), ('is_reviewer', '!=', True),]}" />
+               <button name="button_draft" string="Reset to Draft" type="object" groups="nl_account.group_finance_reviewer,nl_contract.group_ceo" attrs="{'invisible' : [('state', '=', 'draft')]}" />
+            </xpath>
+            
+            <xpath expr="//sheet/div[@name='button_box']" position="before">
+                <field name="internal_transfer_id" invisible="1" />
+                <field name="total_amount_in_usd" invisible="1" />
+                <field name="is_reviewer" invisible="1" />
+                <field name="is_approver" invisible="1" />
+            </xpath>
+            <xpath expr="//sheet/div[@name='button_box']" position="inside">
+                <!-- Internal Transfer button -->
+                <button class="oe_stat_button" name="open_internal_transfer" type="object"
+                    icon="fa-link"
+                    attrs="{'invisible': [('internal_transfer_id', '=', False)]}"
+                    style="width: 185px;"
+                    context="{'fee': True}">
+                    Internal Transfer
+                </button>
+
+            </xpath>
+        </field>
+    </record>
+    <record id="view_move_tree_inherit_account" model="ir.ui.view">
+        <field name="name">account.move.view.tree.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="usd_currency_id" invisible="1" />
+                <field name="total_amount_in_usd" sum="Total Amount in USD" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_invoice_bill_tree_inherit_account" model="ir.ui.view">
+        <field name="name">view.invoice.bill.tree.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='activity_ids']" position="replace">
+                <field name="payment_reference"/>
+            </xpath>
+        </field>
+    </record>
+
+
+
+    <record id="inherit_view_view_account_invoice_filter" model="ir.ui.view">
+        <field name="name">account.move.view.form.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='draft']" position="after">
+                <filter name="review" string="To Review" domain="[('state','=','review')]"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <record id="inherit_view_view_account_move_filter" model="ir.ui.view">
+        <field name="name">account.move.view.form.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_move_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='unposted']" position="after">
+                <filter name="review" string="To Review" domain="[('state','=','review')]"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

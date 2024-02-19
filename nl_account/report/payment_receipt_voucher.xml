@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_payment_receipt_inherit" name="Payment Receipt" inherit_id="account.report_payment_receipt">
+        <xpath expr="//t[1]" position="replace">
+            <t t-call="web.basic_layout">
+                <t t-foreach="docs" t-as="doc">
+                    <style> 
+                        #container {
+                            position:relative;
+                            overflow: hidden;
+                            height: 100%;
+                        }                   
+                        table, tbody, tr, td {
+                            border: none;
+                        }
+                        .scissor_part {
+                            position: relative;
+                            margin-top: 50px;
+                            margin-bottom:50px;
+                        }
+                        .scissor_part div {
+                            width: 96%;
+                            border-top: 2px dotted black;
+                            margin-left: 4%;
+                        }
+                        .scissor_part i {
+                            position: absolute;
+                            top: -14px;
+                            font-size: 27px;
+                        }
+                    </style>
+                    <div id="container">
+                        <t t-foreach="range(2)" t-as="counter">
+                            <div class="row">
+                                <div class="col-12 px-4">
+                                    <div class="row pb-3">
+                                        <div class="col-4 pt-3">
+                                            <img t-if="env.company.logo" t-att-src="image_data_uri(env.company.logo)" alt="Logo" style="width: 100px; height: 100px;"/>
+                                        </div>
+                                        <div class="col-8 pt-3">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    
+                                                </div>
+                                                <div class="col-6 text-start" style="font-size:15px;">
+                                                    <span class="pt-1 d-block"><strong><t t-out="env.company.name"/></strong></span>
+                                                    <span class="pt-1 d-block">Phone: <t t-out="env.company.phone"/></span>
+                                                    <span class="pt-1 d-block">Address: <t t-out="env.company.street"/></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row px-4">
+                                <div class="col-12 text-center py-2" style="background-color: #f3f3f3;">
+                                    <t t-if="doc.payment_type == 'outbound'">
+                                        <span class="text-uppercase">Cash Payment</span>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="text-uppercase">Cash Receipt</span>
+                                    </t>
+                                    <t t-if="counter_first">
+                                        <span class="d-block">Office Copy</span>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="d-block">Customer Copy</span>
+                                    </t>
+                                </div>
+                            </div>
+                            <div class="row mt-5 px-4">
+                                <div class="row">
+                                    <div class="col-3 p-0 m-0">
+                                        <t t-if="doc.payment_type == 'outbound'">
+                                            <span class="d-block" style="font-weight: 600 !important;">Paid To</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="d-block" style="font-weight: 600 !important;">Received From</span>
+                                        </t>
+                                        <span class="d-block"><t t-out="doc.partner_id.name"/></span>
+                                        <span class="d-block"><t t-out="doc.partner_id.street"/></span>
+                                        <span class="d-block"><t t-out="doc.partner_id.city"/>, <t t-out="doc.partner_id.zip"/></span>
+                                    </div>
+                                    <div class="col-5">
+                                    </div>
+                                    <div class="col-4 p-0">
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="py-1">No</td>
+                                                    <td class="text-end"><t t-out="doc.name"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-1">Date</td>
+                                                    <td class="text-end"><t t-out="doc.date"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-1">Payment Method</td>
+                                                    <td class="text-end"><t t-out="doc.journal_id.name"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-1">Amount</td>
+                                                    <td class="text-end"><span t-field="doc.amount"/></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row px-4 mt-5">
+                                <div class="row">
+                                    <table class="w-100" style="border-top: 1px solid gray; border-bottom: 1px solid gray;">
+                                        <tbody>
+                                            <tr>
+                                                <td class="py-2" style="font-weight: bold;" width="20%">Memo</td>
+                                                <td class="text-end" width="80%"><t t-out="doc.ref"/></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row px-4 mt-5">
+                                <div class="col-6 text-center">
+                                    <t t-if="doc.payment_type == 'inbound'">
+                                        <span class="d-block" style="font-weight: bold !important;">Received By</span>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="d-block" style="font-weight: bold !important;">Paid By</span>
+                                    </t>
+                                    <span class="d-block"><t t-out="doc.confirmer_id.name"/></span>
+                                    <span class="d-block" style="margin-top: 50px;">_________________________________________</span>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <t t-if="doc.payment_type == 'inbound'">
+                                        <span class="d-block" style="font-weight: bold !important;">Paid By</span>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="d-block" style="font-weight: bold !important;">Received By</span>
+                                    </t>
+                                    <span class="d-block"><t t-out="doc.partner_id.name"/></span>
+                                    <span class="d-block" style="margin-top: 50px;">_________________________________________</span>
+                                </div>
+                            </div>
+                            <div class="scissor_part" t-if="not counter_last">
+                                <i class="fa fa-scissors" aria-hidden="true"></i>
+                                <div></div>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </t>
+        </xpath>
+    </template>
+
+    <record id="paperformat_payment_receipt_reprot" model="report.paperformat">
+        <field name="name">Payment Receipt Paper Fromat</field>
+        <field name="format">custom</field>
+        <field name="page_height">297</field>
+        <field name="page_width">210</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">0</field>
+        <field name="margin_bottom">0</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="header_line" eval="False"/>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="account.action_report_payment_receipt" model="ir.actions.report">
+        <field name="print_report_name">(object.name)</field>
+        <field name="paperformat_id" ref="nl_account.paperformat_payment_receipt_reprot"/>
+    </record>
+
+</odoo>

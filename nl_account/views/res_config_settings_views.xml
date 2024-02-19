@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    
+        <record id="res_config_settings_view_form_account_inherit" model="ir.ui.view">
+            <field name="name">res.confir.settings.view.form.purchase.inherit</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@id='default_accounts']/div[2]/div[2]/div" position="inside">
+                    <div class="row mt8">
+                        <label for="internal_transfer_fee_account_id" class="col-lg-5 o_light_label"/>
+                        <field name="internal_transfer_fee_account_id"/>
+                    </div>
+                   
+                  
+                </xpath>
+                <xpath expr="//div[@id='default_accounts']/div[1]/div[2]/div" position="inside">
+                    <div class="row mt8">
+                        <label for="internal_transfer_default_journal" class="col-lg-4 o_light_label"/>
+                        <field name="internal_transfer_default_journal"/>
+                    </div>
+                    <!-- <div class="row mt8">
+                        <label for="bank_guarantee_default_journal" class="col-lg-4 o_light_label"/>
+                        <field name="bank_guarantee_default_journal"/>
+                    </div> -->
+                </xpath>
+                <xpath expr="//div[@id='print_vendor_checks_setting_container']" position="after">
+                    <!-- <h2>Bank Guarantee</h2>
+                    <div class="row mt16 o_settings_container" id="bank_guarantee">
+                        <div class="col-12 col-lg-8 o_setting_box">
+                            <div class="o_setting_left_panel"></div>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Number of Days to add bank guarantee to return list.</span>
+                                <div class="content-group">
+                                    <div class="row mt8">
+                                        <label for="days_add_guarantee_to_return_list" class="col-lg-4 o_light_label"/>
+                                        <field name="days_add_guarantee_to_return_list"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+                    <h2>Accounting Reviewers</h2>
+                    <div class="row mt16 o_settings_container" id="accounting_reviewers">
+                        <div class="col-12 col-lg-6 o_setting_box" >
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Set users who can review and approve accounting entries.</span>
+                                <div class="content-group" >
+                                    <div class="row mt16">
+                                        <label for="accounting_reviewer_id" class="col-lg-4 o_light_label"/>
+                                        <field name="accounting_reviewer_id"/>
+                                    </div>
+                                    <div class="row mt16">
+                                        <label for="accounting_approver_id" class="col-lg-4 o_light_label"/>
+                                        <field name="accounting_approver_id"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+        
+    </data>
+</odoo>

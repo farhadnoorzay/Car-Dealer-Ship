@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="account_journal_dashboard_kanban_view_inherit0" model="ir.ui.view">
+        <field name="name">account.journal.dashboard.kanban.view.inherit0</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.account_journal_dashboard_kanban_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='dashboard_bank_cash_right']" position="replace">
+                <div id="dashboard_bank_cash_right" class="col-12 col-sm-7 o_kanban_primary_right">
+                    <div class="row" t-if="dashboard.nb_lines_bank_account_balance > 0">
+                        <div id="dashboard_bank_cash_balance" class="col overflow-hidden text-start">
+                            <span>Statement Balance</span>
+                        </div>
+                        <div class="col-auto text-end">
+                            <span><t t-esc="dashboard.account_balance"/></span>
+                        </div>
+                    </div>
+                    <div class="row" t-if="dashboard.custom_nb_lines_bank_account_balance > 0">
+                        <div id="dashboard_bank_cash_balance" class="col overflow-hidden text-start">
+                            <span>Balance in GL</span>
+                        </div>
+                        <div class="col-auto text-end">
+                            <span><t t-esc="dashboard.custom_bank_account_balance"/></span>
+                        </div>
+                    </div>
+                    <div class="row" t-if="dashboard.nb_lines_outstanding_pay_account_balance > 0">
+                        <div id="dashboard_bank_cash_outstanding_balance" class="col overflow-hidden text-start">
+                            <span title="Outstanding Payments/Receipts">Outstanding Payments/Receipts</span>
+                        </div>
+                        <div class="col-auto text-end">
+                            <span><t t-esc="dashboard.outstanding_pay_account_balance"/></span>
+                        </div>
+                    </div>
+                    <t t-if="dashboard.has_at_least_one_statement and dashboard.account_balance != dashboard.last_balance">
+                        <div class="row" name="latest_statement">
+                            <div class="col overflow-hidden text-start">
+                                <span title="Latest Statement">Latest Statement</span>
+                            </div>
+                            <div class="col-auto text-end">
+                                <span><t t-esc="dashboard.last_balance"/></span>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </xpath>
+            <xpath expr="//div[hasclass('o_kanban_card_manage_section')]" position="inside">
+                <div>
+                    <a type="object" name="action_account_statement_wizard">Account Statement Report</a>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

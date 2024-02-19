@@ -3,6 +3,7 @@
 
 from odoo import models, fields, api
 from odoo.addons.mail.models import mail_thread as MailThread
+from odoo.exceptions import ValidationError
 
 class ShipmentDetails(models.Model):
     _name = 'shipment.details'
@@ -26,34 +27,6 @@ class ShipmentDetails(models.Model):
         ('completed', 'Completed'),
     ], string='State', default='draft', group_expand='_expand_states')
 
-    # activity_ids = fields.One2many(
-    #     'mail.activity',
-    #     'res_id',
-    #     domain=lambda self: [('res_model', '=', 'shipment.details')],
-    #     string='Activities',
-    #     auto_join=True,
-    #     help="Activities related to this shipment",
-    # )
-
-    # message_follower_ids = fields.Many2many(
-    #     'mail.followers',
-    #     'shipment_followers_rel',  # Specify a different table name
-    #     'res_id',
-    #     'partner_id',
-    #     string="Followers",
-    #     copy=False,
-    # )
-
-
-    # message_ids = fields.One2many(
-    #     'mail.message',
-    #     'res_id',
-    #     domain=lambda self: [('model', '=', 'shipment.details')],
-    #     string='Messages',
-    #     auto_join=True,
-    #     help="Messages and communication history",
-    # )
-    
 
     @api.model
     def create(self, vals):
@@ -79,3 +52,10 @@ class ShipmentDetails(models.Model):
 
     def _expand_states(self, states, domain, order):
         return [key for key, val in type(self).state.selection]
+    
+
+    # @api.constrains('state')
+    # def _check_add_vehicle_to_completed_shipment(self):
+    #     for shipment in self:
+    #         if shipment.state == 'completed' and shipment.vehicle_ids:
+    #             raise ValidationError("Cannot add more vehicles to a completed shipment.")

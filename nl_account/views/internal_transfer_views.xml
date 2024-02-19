@@ -1,0 +1,258 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+
+        <!-- List View -->
+        <record id="internal_transfer_view_tree" model="ir.ui.view">
+            <field name="name">internal.transfer.view.tree</field>
+            <field name="model">internal.transfer</field>
+            <field name="arch" type="xml">
+                <tree sample="1"
+                    decoration-primary="state == 'under_review'"
+                    decoration-success="state == 'complete'"
+                    decoration-danger="state == 'reject'"
+                    decoration-warning="state == 'cancel'">
+                    <field name="reference" />
+                    <field name="date" />
+                    <field name="origin_id" />
+                    <field name="destination_id" />
+                    <field name="internal_reference" />
+                    <field name="amount" />
+                    <field name="state"
+                        widget="badge"
+                        decoration-muted="state == 'draft'"
+                        decoration-primary="state == 'under_review'"
+                        decoration-success="state == 'complete'"
+                        decoration-danger="state == 'reject'"
+                        decoration-warning="state == 'cancel'" />
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="internal_transfer_view_form" model="ir.ui.view">
+            <field name="name">
+                internal.transfer.view.form</field>
+            <field name="model">internal.transfer</field>
+            <field name="arch" type="xml">
+                <form duplicate="false">
+                    <header>
+                        <button string="Submit For Review"
+                            name="action_submit_review"
+                            type="object"
+                            class="oe_highlight"
+                            states="draft" />
+                        <button string="Complete"
+                            name="action_complete"
+                            type="object"
+                            class="oe_highlight"
+                            groups="account.group_account_manager"
+                            attrs="{'invisible': [('state', '!=', 'under_review')]}"
+                            confirm="Are you sure you want to complete this record?" />
+                        <button string="Reject"
+                            name="action_reject"
+                            type="object"
+                            states="under_review"
+                            confirm="Are you sure you want to reject this record"
+                            groups="account.group_account_manager" />
+                        <button string="Cancel"
+                            name="action_cancel"
+                            type="object"
+                            states="under_review"
+                            confirm="Are you sure you want to cancel this record?"
+                            groups="account.group_account_manager" />
+                        <button string="Reset as Draft"
+                            name="action_draft"
+                            type="object"
+                            states="cancel,reject,complete"
+                            groups="account.group_account_manager"
+                            confirm="Are you sure you want to reset this record as draft?" />
+                        <field name="state" widget="statusbar"
+                            statusbar_visible="draft,complete" />
+                    </header>
+                    <sheet>
+                        <field name="company_id" invisible="1" />
+                        <field name="journal_entry_id" invisible="1" />
+                        <field name="bank_fee_journal_entry_id" invisible="1" />
+                        <field name="currency_id" invisible="1" />
+                        <field name="fee_currency_id" invisible="1" />
+                        <field name="destination_currency" invisible="1" />
+                        <field name="amount_in_base_currency" invisible="1" />
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" name="open_journal_entries" type="object"
+                                icon="fa-bars"
+                                string="Journal Entries"
+                                attrs="{'invisible': [('journal_entry_id', '=', False)]}">
+                                <div class="o_stat_info">
+                                    <span class="o_stat_text">
+                                        Journal Entries
+                                    </span>
+                                </div>
+                            </button>
+                            <button class="oe_stat_button" name="open_journal_entries" type="object"
+                                icon="fa-bars"
+                                string="Bank Fee"
+                                attrs="{'invisible': [('bank_fee_journal_entry_id', '=', False)]}"
+                                context="{'fee': True}">
+                                <field string="Bank Fee" name="fee_amount"
+                                    widget="statinfo" />
+                            </button>
+                        </div>
+                        <div class="oe_title mb24">
+                            <h3>
+                                <field id="name" class="text-break" name="reference" />
+                            </h3>
+                        </div>
+                        <group>
+                            <group >
+                                <field name="date" />
+                                <field name="internal_reference" />
+                            </group>
+                            <group> </group>
+                            <group string="Transfer From">
+                                <field name="origin_id"
+                                    options="{'no_create': True, 'no_create_edit': True, 'no_quick_create': True}"
+                                    domain="[('id', '!=', destination_id), ('type', 'in',['cash', 'bank']), ('company_id', '=', company_id)]"
+                                />
+                                <field name="amount" />
+                                <field name="amount_in_words" />
+                                <field name="memo" />
+                                <field name="origin_current_balance" readonly="1" />
+
+                            </group>
+                            <group string="Transfer To">
+                                <field name="destination_id"
+                                    options="{'no_create': True, 'no_create_edit': True, 'no_quick_create': True}"
+                                    domain="[('id', '!=', origin_id), ('type', 'in',['cash', 'bank']), ('company_id', '=', company_id)]" />
+                                <field name="amount_in_destination_currency" />
+                                <field name="destination_amount_in_words" />
+                                <field name="destination_current_balance" readonly="1" />
+                            </group>
+                        </group>
+                        <notebook>
+                            <page name="journal_entries" string="Journal Entries"
+                                attrs="{ 'invisible': [('journal_entry_id', '=', False)] }">
+                                <field name="jouranl_item_ids">
+                                    <tree>
+                                        <field name="company_currency_id" invisible="1" />
+                                        <field name="account_id" />
+                                        <field name="partner_id" />
+                                        <field name="name" />
+                                        <field name="amount_currency" />
+                                        <field name="currency_id" />
+                                        <field name="debit" />
+                                        <field name="credit" />
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" />
+                        <field name="activity_ids" />
+                        <field name="message_ids" />
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- kanban -->
+        <record id="view_internal_transfer_kanban" model="ir.ui.view">
+            <field name="name">
+                internal.transfer.kanban</field>
+            <field name="model">internal.transfer</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile" create="0" group_create="0" sample="1">
+                    <field name="reference" />
+                    <field name="memo" />
+                    <field name="date" />
+                    <field name="state" />
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_global_click">
+                                <div class="row mb4">
+                                    <div class="col-6">
+                                        <strong>
+                                            <span>
+                                                <field name="reference" />
+                                            </span>
+                                        </strong>
+                                    </div>
+                                    <div class="col-6 text-right">
+                                        <strong>
+                                            <i class="fa fa-clock-o" role="img" aria-label="Date"
+                                                title="Date" />
+                                            <t t-esc="record.date.value" />
+                                        </strong>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <span>
+                                            <field name="memo" />
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <field name="amount" widget='monetary' />
+                                        <field name="currency_id" invisible="1" />
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="float-right">
+                                            <field name="state" widget="label_selection"
+                                                options="{'classes': {'draft': 'secondary', 'under_review': 'primary', 'complete': 'success', 'reject': 'danger', 'cancel': 'warning'}}" />
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_internal_transfer_search" model="ir.ui.view">
+            <field name="name">internl.transfer.view.search</field>
+            <field name="model">internal.transfer</field>
+            <field name="arch" type="xml">
+                <search string="">
+                    <field name="internal_reference" />
+                    <field name="reference" />
+                    <field name="memo" />
+                    <field name="origin_id" />
+                    <field name="destination_id" />
+                    <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="Under Riview" name="under_review" domain="[('state', '=', 'under_review')]"/>
+                    <filter string="Complete" name="complete" domain="[('state', '=', 'complete')]"/>
+                    <filter string="Cancel" name="cancel" domain="[('state', '=', 'cancel')]"/>
+                    <filter string="Reject" name="reject" domain="[('state', '=', 'reject')]"/>
+                    <group expand="1" string="Group By">
+                        <filter string="Status" name='status' context="{'group_by':'state'}"/>
+                        <filter string="Origin" name='origin' context="{'group_by':'origin_id'}"/>
+                        <filter string="Destination" name='destination' context="{'group_by':'destination_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- action -->
+        <record id="action_internal_transfer_window" model="ir.actions.act_window">
+            <field name="name">Internal Transfer</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">internal.transfer</field>
+            <field name="view_mode">tree,form,kanban</field>
+        </record>
+
+        <!-- menu -->
+        <menuitem
+            id="menu_internal_transfer"
+            name="Internal Transfers"
+            action="action_internal_transfer_window"
+            parent="account.menu_finance_entries_management"
+            sequence="1"
+        />
+
+    </data>
+</odoo>

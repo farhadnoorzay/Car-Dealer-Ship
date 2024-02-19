@@ -54,8 +54,7 @@ class ShipmentDetails(models.Model):
         return [key for key, val in type(self).state.selection]
     
 
-    # @api.constrains('state')
-    # def _check_add_vehicle_to_completed_shipment(self):
-    #     for shipment in self:
-    #         if shipment.state == 'completed' and shipment.vehicle_ids:
-    #             raise ValidationError("Cannot add more vehicles to a completed shipment.")
+ 
+
+    
+

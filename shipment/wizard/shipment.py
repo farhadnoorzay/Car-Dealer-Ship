@@ -1,4 +1,6 @@
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
+
 
 class CDSVehicleShipmentWizard(models.TransientModel):
     _name = 'shipment.wizard'
@@ -44,3 +46,5 @@ class CDSVehicleShipmentWizard(models.TransientModel):
             })
         # active_vehicle.state = "dock"
         active_vehicle.state = "shipment_confirmed"
+
+

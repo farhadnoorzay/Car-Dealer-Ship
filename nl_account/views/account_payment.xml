@@ -1,0 +1,50 @@
+<odoo>
+    <record id="view_account_payment_form_inheirt" model="ir.ui.view">
+        <field name="name">account.payment.view.form.inherit</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_bank_id']" position="after">
+                <field name="payment_reference" />
+            </xpath>
+            <xpath expr="//button[@name='action_post']" position="before">
+                <button string="Send For Review" name="action_send_for_review" type="object" class="oe_highlight" states="draft"/>
+                <button string="Approve" name="action_to_approve" class="oe_highlight" type="object" attrs="{'invisible': ['|', ('state', '!=', 'review'), ('is_reviewer', '!=', True)]}" />
+            </xpath>
+            <xpath expr="//button[@name='action_post']" position="attributes">
+                <attribute name="attrs">{'invisible': ['|', ('state', '!=', 'to_approve'), ('is_approver', '!=', True)]}</attribute>
+                <attribute name="groups"></attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_draft']" position="attributes">
+                <attribute name="attrs">{'invisible': [('state', 'not in', ('posted', 'cancel', 'review', 'to_approve'))]}</attribute>
+            </xpath>
+            <xpath expr="//sheet/div[@name='button_box']" position="before">
+                <field name="is_reviewer" invisible="1" />
+                <field name="is_approver" invisible="1" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_payment_tree_inherit" model="ir.ui.view">
+        <field name="name">account.payment.view.tree.inherit</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='journal_id']" position="after">
+                <field name="payment_reference" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_payment_search_inherit" model="ir.ui.view">
+        <field name="name">account.payment.view.search.inherit</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="replace">
+                <field name="payment_reference" string="Name or Payment Reference" filter_domain="['|', ('name', 'ilike', self), ('payment_reference', 'ilike', self)]" /> 
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

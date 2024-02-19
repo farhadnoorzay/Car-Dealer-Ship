@@ -89,7 +89,6 @@ class Vehicle(models.Model):
     @api.depends('bidding_price', 'dealership_tax','yard', 'tow', 'Shipment', 'vat', 'custom', 'port_clearance_fee', 'purchase_fee', 'recovery_fee', 'repairing_cost', 'sales_agent_fee', 'profit_margin')
     def _compute_total_cost(self):
         for record in self:
-            record.selling_price = False
             total_amount = (
                 record.bidding_price +
                 record.dealership_tax +
@@ -116,7 +115,6 @@ class Vehicle(models.Model):
     @api.depends('original_bidding_price','original_dealership_tax', 'original_yard', 'original_tow', 'original_Shipment', 'original_vat', 'original_custom', 'original_port_clearance_fee', 'original_purchase_fee', 'original_recovery_fee', 'original_repairing_cost', 'original_sales_agent_fee', 'original_profit_margin')
     def _compute_original_total_cost(self):
         for record in self:
-            record.original_selling_price = False
             total_amount = (
                 record.original_bidding_price +
                 record.original_dealership_tax +
@@ -185,41 +183,10 @@ class Vehicle(models.Model):
     def create(self, vals):
         vals['reference'] = self.env['ir.sequence'].next_by_code('cds.vehicle.sequence')
         return super(Vehicle, self).create(vals)
-    
 
     def _expand_states(self, states, domain, order):
         return [key for key, val in type(self).state.selection]
-
-
-    # activity_ids = fields.One2many(
-    #     'mail.activity',
-    #     'res_id',
-    #     domain=lambda self: [('res_model', '=', 'cds.vehicle')],
-    #     string='Activities',
-    #     auto_join=True,
-    #     help="Activities related to this vehicle",
-    # )
-
-    # message_follower_ids = fields.Many2many(
-    #     'mail.followers',
-    #     'mail_followers_rel',
-    #     'res_id',
-    #     'partner_id',
-    #     string="Followers",
-    #     copy=False,
-    # )
-
-    # message_ids = fields.One2many(
-    #     'mail.message',
-    #     'res_id',
-    #     domain=lambda self: [('model', '=', 'cds.vehicle')],
-    #     string='Messages',
-    #     auto_join=True,
-    #     help="Messages and communication history",
-    # )
-
-
-
+    
 
 class VehicleCategory(models.Model):
     _name = 'cds.vehicle.category'

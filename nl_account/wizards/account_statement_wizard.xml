@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="account_statement_wizard_view_form" model="ir.ui.view">
+        <field name="name">account.statement.wizard.view.form</field>
+        <field name="model">account.statement.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="from_date" string="Start Date" />
+                    </group>
+                    <group>
+                        <field name="to_date" string="End Date" />
+                    </group>
+                </group>
+                <footer>
+                    <button type="object" name="action_print" string="Print" class="btn-primary" />
+                    <button string="Cancel" class="btn-default" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

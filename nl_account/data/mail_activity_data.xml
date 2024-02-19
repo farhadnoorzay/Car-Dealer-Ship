@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="mail_activity_internal_transfer_review" model="mail.activity.type">
+            <field name="name">Review</field>
+            <field name="icon">fa-check-circle</field>
+            <field name="sequence">4</field>
+            <field name="active">False</field>
+            <field name="res_model">internal.transfer</field>
+        </record>
+
+        <record id="mail_activity_accounting_entry" model="mail.activity.type">
+            <field name="name">Approval</field>
+            <field name="icon">fa-check-circle</field>
+            <field name="sequence">4</field>
+            <field name="active">False</field>
+            <field name="res_model">account.move</field>
+        </record>
+        
+    </data>
+</odoo>

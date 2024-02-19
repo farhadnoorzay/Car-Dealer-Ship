@@ -93,26 +93,26 @@
                                         <field name="sales_agent_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
                                         <field name="profit_margin"  attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}" widget="percentage"/>
                                         <field name="total_cost" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                        <field name="selling_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="selling_price" />
                                         <field name="state" invisible="1"/>
                                     </group>
                                     <group name="original_pricing_details" string="Original Pricing Details" attrs="{'invisible': [('state', 'not in', ['maintenance','sold'])]}">
-                                        <field name="original_currency" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                        <field name="original_bidding_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                        <field name="original_dealership_tax" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                        <field name="original_yard" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                        <field name="original_tow" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                        <field name="original_Shipment" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                        <field name="original_vat" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                        <field name="original_custom" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                        <field name="original_port_clearance_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                        <field name="original_purchase_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                        <field name="original_recovery_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                        <field name="original_repairing_cost" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                        <field name="original_sales_agent_fee" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                        <field name="original_profit_margin"  attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}" widget="percentage"/>
-                                        <field name="original_total_cost" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
-                                        <field name="original_selling_price" attrs="{'readonly': [('state', 'in', ['maintenance', 'sold', 'dock'])]}"/>
+                                        <field name="original_currency" attrs="{'readonly': [('state', 'in', ['sold', 'dock'])]}"/>
+                                        <field name="original_bidding_price" attrs="{'readonly': [('state', 'in', ['sold', 'dock'])]}"/>
+                                        <field name="original_dealership_tax" attrs="{'readonly': [('state', 'in', ['sold', 'dock'])]}"/>
+                                        <field name="original_yard" attrs="{'readonly': [('state', 'in', [ 'sold', 'dock'])]}"/>
+                                        <field name="original_tow" attrs="{'readonly': [('state', 'in', [ 'sold', 'dock'])]}"/>
+                                        <field name="original_Shipment" attrs="{'readonly': [('state', 'in', [ 'sold', 'dock'])]}"/>
+                                        <field name="original_vat" attrs="{'readonly': [('state', 'in', [ 'sold', 'dock'])]}"/>
+                                        <field name="original_custom" attrs="{'readonly': [('state', 'in', [ 'sold', 'dock'])]}"/>
+                                        <field name="original_port_clearance_fee" attrs="{'readonly': [('state', 'in', [ 'sold', 'dock'])]}"/>
+                                        <field name="original_purchase_fee" attrs="{'readonly': [('state', 'in', [ 'sold', 'dock'])]}"/>
+                                        <field name="original_recovery_fee" attrs="{'readonly': [('state', 'in', [ 'sold', 'dock'])]}"/>
+                                        <field name="original_repairing_cost" attrs="{'readonly': [('state', 'in', [ 'sold', 'dock'])]}"/>
+                                        <field name="original_sales_agent_fee" attrs="{'readonly': [('state', 'in', [ 'sold', 'dock'])]}"/>
+                                        <field name="original_profit_margin"  attrs="{'readonly': [('state', 'in', ['sold', 'dock'])]}" widget="percentage"/>
+                                        <field name="original_total_cost" attrs="{'readonly': [('state', 'in', [ 'sold', 'dock'])]}"/>
+                                        <field name="original_selling_price" attrs="{'readonly': [('state', 'in', [ 'sold', 'dock'])]}"/>
                                         <field name="state" invisible="1"/>
                                     </group>
                         </group>
@@ -154,8 +154,9 @@
                   <templates>
                        <t t-name="kanban-box">
                          <progressbar field="state" colors='{}'/>
-                        <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_hr_kanban_record">
-                            <field name="image" class="o_kanban_image_fill_left d-block" preview_image="image_128" widget="background_image" options="{'zoom': true, 'zoom_delay': 1000}"/>
+                        <div class="oe_kanban_global_click">
+                            <!-- <field name="image" class="o_kanban_image_fill_left d-block" preview_image="image_128" widget="background_image" options="{'zoom': true, 'zoom_delay': 1000}"/> -->
+                            <field name="image" widget="image" class="o_kanban_image_fill_left" options="{'background': true, 'zoom': true, 'zoom_delay': 1000}" />
                             <div class="oe_kanban_details">
                                 <div class="o_kanban_record_top">
                                       <div class="o_kanban_record_headings">

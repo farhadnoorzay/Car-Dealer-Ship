@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_transfer_voucher" model="ir.actions.report">
+        <field name="name">Transfer Voucher</field>
+        <field name="model">internal.transfer</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">nl_account.transfer_voucher</field>
+        <field name="report_file">nl_account.transfer_voucher</field>
+        <field name="binding_model_id" ref="model_internal_transfer"/>
+        <field name="print_report_name">(object.reference)</field>
+        <field name="binding_type">report</field>
+    </record>
+    <template id="transfer_voucher">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page" style="page-break-after: always;">
+                        <div class="title">
+                            <h2>Transfer Voucher</h2>
+                        </div>
+                        <style>
+                            .title {
+                                text-align: center;
+                                margin: auto;
+                            }
+                            .info-table {
+                                text-align: center; 
+                                margin: auto; 
+                                margin-top: 70px;
+                            }
+                            .info-table th, .info-table td, .signatures-table td, .signatures-table th {
+                                width: 25%;
+                            }
+                            .info-table th, .info-table td {
+                                padding: 5px;
+                            }
+                            .content-table, .content-header-table, .info-table, .description-table, .signatures-table{
+                                width: 100%;
+                            }
+                            .content-table th, .content-table td {
+                                border: solid 1px black;
+                                padding: 5px;
+                            }
+                
+                            .description-table th, .description-table td {
+                                border: none !important; 
+                            }  
+                            .signatures-table {
+                                text-align: center;
+                            }
+                            .reference {
+                                margin: 0px;
+                                font-weight: 600;
+                            }
+                            .signature-text {
+                                margin-top: 25px;
+                                color: silver;
+                            }
+                            .signatures {
+                                margin-top: 100px;
+                            }
+                        </style>
+                        <div class="info">
+                            <table class="info-table">
+                                <tr>
+                                    <th>Transfer From</th>
+                                    <th>Transfer To</th>
+                                    <th>Currency</th>
+                                    <th>Date</th>
+                                </tr>
+                                <tr>
+                                    <td><t t-out="o.origin_id.name"/></td>
+                                    <td><t t-out="o.destination_id.name"/></td>
+                                    <td><t t-out="o.currency_id.name"/></td>
+                                    <td><t t-out="o.date"/></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="content mt-5">
+                            <p class="reference mb-2"><t t-out="o.reference"/></p>
+                            <table class="content-table">
+                                <tr>
+                                    <th style="width: 60%;">Description</th>
+                                    <th>Amount</th>
+                                </tr>
+                                <tr>
+                                    <td style="width: 60%;">
+                                        <table class="description-table">
+                                            <tr>
+                                                <th>Payment Type</th>
+                                                <th>Payment Reference</th>  
+                                            </tr>
+                                            <tr>
+                                                <td><t t-out="o.origin_id.type.title()"/></td>
+                                                <td><t t-out="o.internal_reference"/></td>
+                                            </tr>
+                                            <tr style="border-top: solid 1px silver;">
+                                                <th colspan="3" style="width: 100%">Memo:</th>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="3" style="width: 100%">
+                                                    <t t-out="o.memo"/>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <strong><t t-out="o.amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></strong>
+                                        <br/>
+                                        <br/>
+                                        In Words: <t t-out="o.currency_id.amount_to_text(o.amount)"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="signatures">
+                            <table class="signatures-table">
+                                <tr>
+                                    <th>
+                                        <span>
+                                            Authorized By
+                                        </span>
+                                    </th>
+                                    <th>
+                                        <span>
+                                            Paid By
+                                        </span> 
+                                    </th>
+                                    <th>
+                                        <span>
+                                            Received By
+                                        </span>
+                                    </th>
+                                </tr>
+                                <tr style="border-top: solid 1px silver;">
+                                    <td style="padding-top: 10px;">
+                                        <p class="signature-text">Name</p>
+                                        <p class="signature-text">Signature</p>
+                                    </td>
+                                    <td style="padding-top: 10px;">
+                                        <t t-out="o.create_uid.name"/>
+                                        <p class="signature-text">Signature</p>
+                                    </td>
+                                    <td style="padding-top: 10px;">
+                                        <p class="signature-text">Name</p>
+                                        <p class="signature-text">Signature</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

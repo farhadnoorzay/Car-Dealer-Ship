@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+        <template id="customer_balance_report_template" name="Partner Balance Report">
+            <t t-call="web.basic_layout">
+                <style>
+                    table {
+                        border-collapse: collapse;
+                    }
+                    .table th, .table td {
+                        padding: 6px !important;
+                        border: 1px solid #a1a1a1 !important;
+                        vertical-align: middle;
+                    }
+                    .table th {
+                        background: #f1f1f1;
+                        color: black;
+                        text-transform: uppercase;
+                        padding: 8px 6px !important;
+                    }
+                    .simple {
+                        border-left: none !important;
+                        border-right: none !important;
+                    }
+                    td {
+                        text-align: center;
+                    }
+                    tbody {
+                        font-size: 13px !important;
+                        border-top: none !important;
+                    }
+                    thead {
+                        font-size: 13px !important;
+                    }
+                    .heading {
+                        background: #eaeaea;
+                    }
+                </style>
+                <t t-set="company" t-value="env.company"/>
+                <div class="page">
+                    <div>
+                        <!-- Header -->
+                        <div class="header">
+                            <div class="row">
+                                <div class="col-4"  style="margin-top:-5px;">
+                                    <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 100px;max-width:100px" alt="Logo"/>
+                                </div>
+                                <div class="col-4"></div>
+                                <div class="col-4 mt-1" style="font-size:15px;" >
+                                    <div t-out="company.name"/>
+                                    <div class="py-1" t-out="company.phone"/>
+                                    <div t-out="company.street"/>
+                                </div>
+                            </div>
+                            <div class="row mb-4 mt-4">
+                                <div class="col-12 text-center" style="background: #e1e1e1; padding: 11px 0; ">
+                                    Partners Balance
+                                </div>
+                            </div>
+                            <div class="row mt-2" style="font-size:13px;">
+                                <div class="col-4">
+                                    <span style="padding-right:3px; font-weight:600">Balance as of:</span>
+                                    <t t-out="date"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Partner</th>
+                                        <th t-foreach="wizard_id.currency_ids" t-as="currency">
+                                            <t t-out="currency.name"/>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="report_data" t-as="partner">
+                                        <tr>
+                                            <td t-out="report_data[partner]['partner_name']"/>
+                                            <t t-foreach="wizard_id.currency_ids" t-as="currency">
+                                                <t t-set="currency_option" t-value="{'widget': 'monetary', 'display_currency':currency}"/> 
+                                                <td t-out="report_data[partner][currency.name]" t-options="currency_option"/>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <record id="paperformat_customer_balance_report" model="report.paperformat">
+            <field name="name">Paper format customer balance report</field>
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">61</field>
+            <field name="margin_bottom">5</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">51</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <record id="customer_balance_report" model="ir.actions.report">
+            <field name="name">Print Parnter Balance</field>
+            <field name="model">customer.balance.wizard</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">nl_account.customer_balance_report_template</field>
+            <field name="report_file">nl_account.customer_balance_report_template</field>
+            <field name="print_report_name">'%s' % object.name</field>
+            <field name="paperformat_id" ref="paperformat_customer_balance_report"/>
+        </record>
+
+        <record id="customer_balance_report_xls" model="ir.actions.report">
+            <field name="name">Partner Balance</field>
+            <field name="model">customer.balance.wizard</field>
+            <field name="report_type">xlsx</field>
+            <field name="report_name">nl_account.customer_balance_report_xls</field>
+            <field name="report_file">nl_account.customer_balance_report_xls</field>
+        </record>
+    </data>
+
+</odoo>

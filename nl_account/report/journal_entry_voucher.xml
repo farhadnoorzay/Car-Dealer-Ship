@@ -1,0 +1,124 @@
+<odoo>
+    <odoo>
+        <data>
+            <record id="paperformat_account_journal_report" model="report.paperformat">
+                <field name="name">Paper format account journal report</field>
+                <field name="format">A4</field>
+                <field name="page_height">0</field>
+                <field name="page_width">0</field>
+                <field name="orientation">Portrait</field>
+                <field name="margin_top">5</field>
+                <field name="margin_bottom">5</field>
+                <field name="margin_left">7</field>
+                <field name="margin_right">7</field>
+                <field name="header_line" eval="False" />
+                <field name="header_spacing">46</field>
+                <field name="dpi">90</field>
+            </record>
+
+            <record id="action_report_journal_voucher" model="ir.actions.report">
+                <field name="name">Journal Voucher</field>
+                <field name="model">account.move</field>
+                <field name="report_type">qweb-pdf</field>
+                <field name="report_name">nl_account.report_journal_voucher</field>
+                <field name="report_file">nl_account.report_journal_voucher</field>
+                <field name="print_report_name">'%s' % object.name</field> 
+                <field name="binding_model_id" ref="account.model_account_move"/>
+                <field name="binding_type">report</field>
+                <field name="paperformat_id" ref="paperformat_account_journal_report"/>
+            </record>
+            
+            <template id="report_journal_voucher">
+                <t t-call="web.basic_layout">
+                    <style>
+                        table {
+                            border-collapse: collapse;
+                        }
+                        .table th, .table td {
+                            padding: 6px !important;
+                            border: 1px solid #f1f1f1 !important;
+                            vertical-align: middle;
+                        }
+                        .table th {
+                            background: #f1f1f1;
+                            color: black;
+                            text-transform: uppercase;
+                            padding: 8px 6px !important;
+                        }
+                        .simple {
+                            border-left:none !important;
+                            border-right:none !important;
+                        }
+                        tbody {
+                            font-size: 13px !important;
+                            border-top:none !important;
+                        }
+                        thead {
+                            font-size: 13px !important;
+                        }
+                    </style>
+                    <t t-foreach="docs.sudo()" t-as="o">
+                        <t t-set="company" t-value="o.company_id"/>
+                        <div class="page">
+                            <div id="container">
+                                <!-- Header -->
+                                <div class="mb-4">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 100px;max-width:100px" alt="Logo"/>
+                                        </div>
+                                        <div class="col-4"></div>
+                                        <div class="col-4 mt-4" style="font-size:15px;"> 
+                                            <div t-out="company.name"/>
+                                            <div class="py-1" t-out="company.phone"/>
+                                            <div t-out="company.street"/>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-4 mt-4">
+                                        <div class="col-12 text-center" style="background: #f4f4f4; padding: 11px 0;">
+                                           JOURNAL VOUCHER
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2" style="font-size:13px;">
+                                        <div class="col-4"><span style="padding-right:3px; font-weight:600">Journal</span> <span t-out="o.journal_id.name"/></div>
+                                        <div class="col-4"><span style="padding-right:3px; font-weight:600">Reference:</span> <span t-out="o.ref"/></div>
+                                        <div class="col-4"><span style="padding-right:3px; font-weight:600">Date:</span> <span t-out="o.date"/></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align:left;">Account</th>
+                                                <th class="simple">Partner</th>
+                                                <th class="simple">Label</th>
+                                                <th class="simple">Amount</th>
+                                                <th class="simple">Debit</th>
+                                                <th class="simple">Credit</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="o.line_ids" t-as="line">
+                                                <td><t t-out="line.account_id.code"/> <t t-out="line.account_id.name"/></td>
+                                                <td><t t-out="line.partner_id.name"/></td>
+                                                <td><t t-out="line.name"/></td>
+                                                <td><t t-out="line.amount_currency" t-options="{'widget': 'monetary', 'display_currency': line.currency_id}"/></td>
+                                                <td class="text-right"><t t-out="line.debit" t-options="{'widget': 'monetary', 'display_currency': line.company_currency_id}"/></td>
+                                                <td class="text-right"><t t-out="line.credit" t-options="{'widget': 'monetary', 'display_currency': line.company_currency_id}"/></td>
+                                            </tr>
+                                            <tr style="background: #f4f4f4;">
+                                                <td colspan="4" class="text-center">Total</td>
+                                                <td><t t-out="o.amount_total_signed" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/></td>
+                                                <td><t t-out="o.amount_total_signed" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </template>
+        </data>
+    </odoo>
+</odoo>
